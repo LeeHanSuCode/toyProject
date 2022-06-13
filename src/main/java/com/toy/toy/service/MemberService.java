@@ -83,11 +83,12 @@ public class MemberService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalStateException());
 
+        //회원이 작성한 댓글들을 삭제
         if(!member.getComments().isEmpty()){
             commentRepository.deleteByMember(member);
         }
 
-        //회원이 작성한 게시글과 거기에 작성된 댓글을 모두 지워야 한다.
+        //회원이 작성한 게시글과 거기에 작성된 댓글,파일 삭제
         if(!member.getBoards().isEmpty()){
             boardService.deleteByMember(member);
         }

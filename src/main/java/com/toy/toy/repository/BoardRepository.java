@@ -11,10 +11,10 @@ import java.util.List;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
-    @Modifying(clearAutomatically = true)
-    @Query("delete from Board b where b.member = :member")
-    public void deleteByMemberId(@Param("member") Member member);
+    @Modifying
+    @Query("delete from Board b where b.member.id = :id")
+    public void deleteByMemberId(@Param("id") Long id);
 
-    @Query("select b from Board b where b.member = :member")
-    public List<Board> findByMember(@Param("member") Member member);
+    @Query("select b from Board b where b.member.id = :id")
+    public List<Board> findByMember(@Param("id") Long id);
 }
