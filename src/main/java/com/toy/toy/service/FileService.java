@@ -1,71 +1,77 @@
 package com.toy.toy.service;
-import com.toy.toy.entity.Files;
+
+import com.toy.toy.dto.BoardUpdateDto;
+import com.toy.toy.dto.FilesDto;
+import com.toy.toy.entity.Board;
 import com.toy.toy.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
+import javax.persistence.EntityManager;
 import java.util.List;
-import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
-@Slf4j
+@RequiredArgsConstructor
 public class FileService {
 
     private final FileRepository fileRepository;
+    private final FileTransfer fileTransfer;
+    private final EntityManager em;
 
-    @Value("${file.dir}")
-    private String fileDir;
-
-    //파일 저장 경로 얻어오기
-    public String getFullPath(String filename){
-
-        return fileDir + filename;
-    }
-
-    //파일 형식 변환하고 저장.
+    //파일 저장 -> 게시글에 의한 저장만 가능.
     @Transactional
-    public void changeFilesAndSave(List<MultipartFile> multipartList){
-        multipartList.stream()
-                .forEach(f -> fileRepository.save(changeFileFormat(f)));
-
+    public void save(List<MultipartFile> files , Board board){
+        fileTransfer.changeFiles(files , board)
+                .stream()
+                .forEach(f ->fileRepository.save(f));
     }
 
-    //단건 파일 형식 변환.
-    public Files changeFileFormat(MultipartFile multipartFile){
 
-        String originalFilename = multipartFile.getOriginalFilename();
 
-        String storeFilename = createStoreFileName(originalFilename);
+    //파일 수정
+    @Transactional
+    public List<FilesDto> update(Board board , BoardUpdateDto boardUpdateDto){
+        List<FilesDto> existFiles = fileRepository.findByBoard(board);
 
-        try {
-            multipartFile.transferTo(new File(getFullPath(storeFilename)));
-        }catch (IOException e){
-            log.error("changeFileFormat occur!");
-            throw new IllegalStateException();
+        List<Long> removeFiles = compareFiles(existFiles, boardUpdateDto.getAliveFiles());
+
+        //파일 삭제
+        if(!removeFiles.isEmpty()){
+            fileRepository.deleteByIdList(removeFiles);
         }
 
-        //체크
-        return new Files(originalFilename, storeFilename);
+        //새로운 파일은 저장
+        if(boardUpdateDto.getNewFiles().size() > 0 ){
+           save(boardUpdateDto.getNewFiles() , board);
+        }
+
+        return fileRepository.findByBoard(board);
     }
 
-    //서버에 저장할 파일명 생성
-    private String createStoreFileName(String originalFilename){
-        String uuid = UUID.randomUUID().toString();
-        String ext = extract(originalFilename);
-        return uuid + "." + ext;
+
+
+    //살아남지 못한 파일 반환.
+    private List<Long> compareFiles(List<FilesDto> existFiles , List<Long> aliveFiles){
+
+        if(existFiles.size() > 0){
+
+            List<Long> existFilesId = existFiles
+                    .stream()
+                        .map(f -> f.getId())
+                            .collect(Collectors.toList());
+
+          return existFilesId
+                    .stream()
+                        .filter(id -> aliveFiles.stream().noneMatch(Predicate.isEqual(id)))
+                            .collect(Collectors.toList());
+        }
+        return null;
     }
 
-    //확장자 추출
-    private String extract(String originalFilename){
-        int pos = originalFilename.lastIndexOf(".");
-        return originalFilename.substring(pos+1);
-    }
+
 }

@@ -66,6 +66,7 @@ public class MemberService {
 
 
     //회원 수정 하기
+    @Transactional
     public void update(UpdateMemberDto updateMemberDto){
         Member member = memberRepository.findById(updateMemberDto.getId())
                 .orElseThrow(() -> new IllegalStateException());
@@ -79,6 +80,7 @@ public class MemberService {
 
 
     //회원 삭제
+    @Transactional
     public void delete(Long memberId){
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalStateException());

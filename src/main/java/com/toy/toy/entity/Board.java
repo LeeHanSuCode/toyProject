@@ -25,7 +25,6 @@ public class Board extends BaseEntity {
 
     private Integer readCount;
 
-    //싫어요 갯수가 20개를 넘어가면 삭제되게끔 할것인데 이때 , 옵저버 패턴을 한번 사용해 볼까?
     private Integer likeCount;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -39,4 +38,14 @@ public class Board extends BaseEntity {
     @OneToMany(mappedBy = "board")
     private List<Files> files = new ArrayList<>();
 
+
+    //조회수 증가
+    public void addReadCount(){
+        this.readCount++;
+    }
+
+    //게시글 수정
+    public void changeContent(String content){
+        this.content = content;
+    }
 }

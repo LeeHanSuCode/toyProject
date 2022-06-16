@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class CommentService {
 
@@ -24,7 +24,6 @@ public class CommentService {
     private final MemberRepository memberRepository;
 
     //댓글 등록
-    @Transactional
     public Long registry(CommentDto commentDto, Long memberId , Long boardId){
 
         Board board = boardRepository.findById(boardId)
@@ -46,7 +45,8 @@ public class CommentService {
     }
 
 
-    //게시글당 댓글 조회
+    //게시글당 댓글 조회 (이건 어차피 비동기 통신으로 처리)
+    @Transactional(readOnly = true)
     public List<CommentDto> findAll(Long boardId){
         List<Comment> comments = commentRepository.findByBoardId(boardId);
 
@@ -71,6 +71,7 @@ public class CommentService {
 
         comment.updateComment(comment.getContent());
     }
+
 
     //게시글 삭제
     public void delete(Long commentId){

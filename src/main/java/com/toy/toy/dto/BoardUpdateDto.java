@@ -1,6 +1,5 @@
 package com.toy.toy.dto;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
@@ -8,14 +7,17 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @Getter @Setter
-@Builder
-public class BoardWriteDto {
+public class BoardUpdateDto {
 
-    private String subject;
+    private Long boardId;
 
     private String boardContent;
 
-    private List<MultipartFile> files;
+    //새로 저장한 파일
+    private List<MultipartFile> newFiles;
+
+    //살아남은 파일 목록.
+    private List<Long> aliveFiles;
 
 
 }

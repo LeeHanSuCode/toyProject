@@ -12,9 +12,10 @@ import javax.persistence.*;
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 public class Files extends BaseEntity {
 
-    public Files(String uploadFilename , String serverFilename){
+    public Files(String uploadFilename , String serverFilename , Board board){
         this.uploadFilename = uploadFilename;
         this.serverFilename = serverFilename;
+        this.board = board;
     }
 
     @Id @GeneratedValue
