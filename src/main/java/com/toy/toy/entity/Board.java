@@ -48,4 +48,18 @@ public class Board extends BaseEntity {
     public void changeContent(String content){
         this.content = content;
     }
+
+    //좋아요 증감
+    public void changeLikeCount(String mode){
+        int num = (mode.equalsIgnoreCase("like")) ? 1 : -1;
+
+        this.likeCount += num;
+    }
+
+    //좋아요 증감 삭제
+    public void deleteLikeCount(String mode){
+        int num = (mode.equalsIgnoreCase("like")) ? -1 : 1;
+
+        this.likeCount +=num;
+    }
 }

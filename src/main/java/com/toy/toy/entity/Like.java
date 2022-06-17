@@ -1,19 +1,25 @@
 package com.toy.toy.entity;
 
 import com.toy.toy.entity.mappedEntity.BaseEntity;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@Entity
+@Entity @Getter
 @NoArgsConstructor
 public class Like extends BaseEntity {
 
-
-    public Like(Board board , Member member){
+    //좋아요와 싫어요의 표현을 mode로 처리.
+    public Like(Board board , Member member, String mode){
         this.member = member;
         this.board = board;
-        this.likeChoice = LikeChoice.NOT;
+
+        if(mode.equalsIgnoreCase("like")){
+            this.likeChoice = LikeChoice.LIKE;
+        }else{
+            this.likeChoice = LikeChoice.HATE;
+        }
     }
 
     @Id @GeneratedValue
