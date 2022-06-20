@@ -16,7 +16,7 @@ import java.util.List;
 public class Board extends BaseEntity {
 
     @Id @GeneratedValue
-    @Column(name = "board_id")
+    @Column(name = "BOARD_ID")
     private Long id;
 
     private String subject;
@@ -28,7 +28,7 @@ public class Board extends BaseEntity {
     private Integer likeCount;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
 

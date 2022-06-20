@@ -13,7 +13,7 @@ import javax.persistence.*;
 public class Comment extends BaseEntity {
 
     @Id @GeneratedValue
-    @Column(name = "comments_id")
+    @Column(name = "COMMENT_ID")
     private Long id;
 
     private String writer;
@@ -22,11 +22,11 @@ public class Comment extends BaseEntity {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_id")
+    @JoinColumn(name = "BOARD_ID")
     private Board board;
 
 

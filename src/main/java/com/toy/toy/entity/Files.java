@@ -19,6 +19,7 @@ public class Files extends BaseEntity {
     }
 
     @Id @GeneratedValue
+    @Column(name = "FILES_ID")
     private Long id;
 
     private String uploadFilename;
