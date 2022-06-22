@@ -1,6 +1,7 @@
 package com.toy.toy.service;
 
 
+import com.toy.toy.controller.exception_controller.exception.MemberNotFoundException;
 import com.toy.toy.dto.JoinMemberDto;
 import com.toy.toy.dto.UpdateMemberDto;
 import com.toy.toy.entity.Member;
@@ -53,7 +54,7 @@ public class MemberService {
     //상세보기 -> 회원 모든 정보 공개(비밀번호 제외)
     public UpdateMemberDto findById(Long memberId){
         Member member = memberRepository.findById(memberId)
-                                    .orElseThrow(() -> new IllegalStateException());
+                                    .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
 
         return UpdateMemberDto.builder()
                 .username(member.getUsername())
@@ -69,7 +70,7 @@ public class MemberService {
     @Transactional
     public void update(UpdateMemberDto updateMemberDto){
         Member member = memberRepository.findById(updateMemberDto.getId())
-                .orElseThrow(() -> new IllegalStateException());
+                .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
 
         //변경 감지 이용
         member.updateMember(updateMemberDto.getUsername() , updateMemberDto.getPassword()
@@ -83,7 +84,7 @@ public class MemberService {
     @Transactional
     public void delete(Long memberId){
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalStateException());
+                .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
 
         //회원이 작성한 댓글들을 삭제
         if(!member.getComments().isEmpty()){

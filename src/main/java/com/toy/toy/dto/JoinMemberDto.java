@@ -2,6 +2,7 @@ package com.toy.toy.dto;
 
 
 import com.toy.toy.entity.Member;
+import com.toy.toy.entity.MemberGrade;
 import lombok.*;
 
 import javax.validation.constraints.Email;
@@ -51,6 +52,7 @@ public class JoinMemberDto {
                 .password(this.password)
                 .email(this.email)
                 .tel(this.tel)
+                .memberGrade(MemberGrade.NORMAL)
                 .build();
     }
 
