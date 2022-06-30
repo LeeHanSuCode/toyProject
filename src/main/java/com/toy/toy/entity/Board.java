@@ -3,6 +3,7 @@ package com.toy.toy.entity;
 
 import com.toy.toy.entity.mappedEntity.BaseEntity;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.util.ArrayList;

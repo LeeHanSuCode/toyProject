@@ -16,26 +16,26 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 public class JoinMemberDto {
+    private Integer age;
 
-
-    @NotBlank
-    @Size(min = 2 , max = 4)
+    //@NotBlank
+    //@Size(min = 2 , max = 4 , message = "Name은 2글자 이상 입력해주세요.")
     private String username;
 
     @NotBlank
-    @Pattern(regexp = "[a-zA-Z0-9]{8,20}")
+    //@Pattern(regexp = "[a-zA-Z0-9]{8,20}")
     private String userId;
 
-    @Pattern(regexp = "\\d{2}([0]\\d|[1][0-2])([0][1-9]|[1-2]\\d|[3][0-1])[-]*[1-4]\\d{6}")
+    //@Pattern(regexp = "\\d{2}([0]\\d|[1][0-2])([0][1-9]|[1-2]\\d|[3][0-1])[-]*[1-4]\\d{6}")
     private String ssn;
 
-    @NotBlank
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[~!@#$%^&*()+|=])[A-Za-z\\d~!@#$%^&*()+|=]{8,16}$")
+    //@NotBlank
+    //@Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[~!@#$%^&*()+|=])[A-Za-z\\d~!@#$%^&*()+|=]{8,16}$")
     private String password;
 
     private String password2;
 
-    @Email
+    //@Email
     private String email;
 
     private String tel;

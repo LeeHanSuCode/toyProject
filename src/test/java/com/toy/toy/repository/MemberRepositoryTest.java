@@ -5,9 +5,7 @@ import com.toy.toy.entity.Member;
 import com.toy.toy.entity.MemberGrade;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
@@ -20,6 +18,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+
 @DataJpaTest            //@Transactional 을 포함하고 있다.
 @Slf4j
 class MemberRepositoryTest {
@@ -29,6 +29,8 @@ class MemberRepositoryTest {
 
     @PersistenceContext
     private EntityManager em;
+
+    private Long findMemberId;
 
 
     @BeforeEach
@@ -56,6 +58,9 @@ class MemberRepositoryTest {
 
             memberRepository.save(member1);
             memberRepository.save(member2);
+
+            //조회 , 수정 , 삭제등에서 조회할 회원 id 하나 지정.
+            findMemberId = member1.getId();
 
         em.flush();
         em.clear();
@@ -148,17 +153,11 @@ class MemberRepositoryTest {
     }
 
 
-    @DisplayName("회원 수정")
+    @DisplayName("회원 수정(이름,비밀번호,이메일,전화번호)  -> 비밀번호만 변경 x")
     @Test
     void updateMember(){
         //given
-        Member joinMember = member();
-        memberRepository.save(joinMember);
-
-        em.flush();
-        em.clear();
-
-        Member findMember = memberRepository.findById(joinMember.getId()).get();
+        Member findMember = memberRepository.findById(findMemberId).get();
         String existPw = findMember.getPassword();
 
         //when
@@ -186,20 +185,16 @@ class MemberRepositoryTest {
     @Test
     void deleteMember(){
         //given
-    /*    Member joinMember = member();
-        memberRepository.save(joinMember);
-
-        em.flush();
-        em.clear();
-*/
-        Member findMember = memberRepository.findById(1L).get();
+        List<Member> findMembers = memberRepository.findAll();
+        int existSize = findMembers.size();
 
         //when
-        memberRepository.delete(findMember);
+        memberRepository.delete(findMembers.get(0));
         em.flush();
         em.clear();
 
         //then
-       assertThat(memberRepository.findAll().size()).isEqualTo(1);
+       assertThat(memberRepository.findAll().size())
+               .isNotSameAs(existSize);
     }
 }
