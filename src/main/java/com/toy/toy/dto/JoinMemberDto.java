@@ -5,37 +5,39 @@ import com.toy.toy.entity.Member;
 import com.toy.toy.entity.MemberGrade;
 import lombok.*;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 public class JoinMemberDto {
-    private Integer age;
+    private int age;
 
-    //@NotBlank
-    //@Size(min = 2 , max = 4 , message = "Name은 2글자 이상 입력해주세요.")
+    private Long id;
+
+    @NotBlank
+    @Size(min = 2 , max = 4 ,message = "이게 디폴트 메세지로 동작??")
     private String username;
 
     @NotBlank
-    //@Pattern(regexp = "[a-zA-Z0-9]{8,20}")
+    @Pattern(regexp = "[a-zA-Z0-9]{8,20}")
+    @Size(min = 8 , max = 20)
     private String userId;
 
-    //@Pattern(regexp = "\\d{2}([0]\\d|[1][0-2])([0][1-9]|[1-2]\\d|[3][0-1])[-]*[1-4]\\d{6}")
+    @Pattern(regexp = "\\d{2}([0]\\d|[1][0-2])([0][1-9]|[1-2]\\d|[3][0-1])[-]*[1-4]\\d{6}")
     private String ssn;
 
-    //@NotBlank
-    //@Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[~!@#$%^&*()+|=])[A-Za-z\\d~!@#$%^&*()+|=]{8,16}$")
+    @NotBlank
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[~!@#$%^&*()+|=])[A-Za-z\\d~!@#$%^&*()+|=]{8,16}$")
+    @Size(min = 8,max = 16)
     private String password;
 
     private String password2;
 
-    //@Email
+    @Email
     private String email;
 
     private String tel;

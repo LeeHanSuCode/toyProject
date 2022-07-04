@@ -1,18 +1,29 @@
 package com.toy.toy.controller;
 
 
-import com.toy.toy.controller.exception_controller.exception.BoardNotFoundException;
-import com.toy.toy.controller.exception_controller.exception.CommentNotFoundException;
-import com.toy.toy.controller.exception_controller.exception.FilesNotFoundException;
-import com.toy.toy.controller.exception_controller.exception.MemberNotFoundException;
+import com.toy.toy.controller.exception_controller.exception.*;
 import com.toy.toy.dto.JoinMemberDto;
 import com.toy.toy.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+
 
 @RestController
 @RequestMapping("/test")
 @RequiredArgsConstructor
+@Slf4j
 public class TestController {
 
     private final MemberService memberService;
@@ -41,6 +52,20 @@ public class TestController {
        return String.valueOf(memberService.join(joinMemberDto));
     }
 
+    @PostMapping("/member/join2")
+    public ResponseEntity memberJoin2(@Valid @RequestBody JoinMemberDto joinMemberDto , BindingResult bindingResult){
+
+        if(!joinMemberDto.getPassword().equals(joinMemberDto.getPassword2())){
+                bindingResult.rejectValue("password","NotEquals","비밀번호가 일치하지 않습니다");
+        }
+
+        if(bindingResult.hasErrors()){
+            throw new ValidationNotFieldMatchedException(bindingResult);
+        }
+
+        log.info("호출되??333");
+        return ResponseEntity.ok().build();
+    }
 
     @GetMapping("/board/{itemId}")
     public String board(@PathVariable String itemId){

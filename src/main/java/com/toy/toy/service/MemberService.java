@@ -40,13 +40,8 @@ public class MemberService {
 
     //회원 목록 조회
     //전체 목록에 보여줄 데이터 -> 이름 , 아이디 , 주민번호
-    public Page<JoinMemberDto> findAll(Pageable pageable){
-        return memberRepository.findAll(pageable)
-                .map(m -> JoinMemberDto.builder()
-                        .username(m.getUsername())
-                        .userId(m.getUserId())
-                        .ssn(m.getSsn())
-                        .build());
+    public Page<Member> findAll(Pageable pageable){
+        return memberRepository.findAll(pageable);
     }
 
 
