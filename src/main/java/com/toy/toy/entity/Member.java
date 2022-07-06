@@ -25,7 +25,6 @@ public class Member extends BaseEntity {
 
     private String userId;
 
-    private String ssn;
 
     private MemberGrade memberGrade;
 
@@ -48,5 +47,7 @@ public class Member extends BaseEntity {
             this.email = email;
             this.tel = tel;
     }
+
+
 
 }

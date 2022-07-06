@@ -1,4 +1,4 @@
-package com.toy.toy.dto;
+package com.toy.toy.dto.validationDto;
 
 
 import com.toy.toy.entity.Member;
@@ -7,19 +7,17 @@ import lombok.*;
 
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 @Builder
 public class JoinMemberDto {
-    private int age;
-
-    private Long id;
 
     @NotBlank
-    @Size(min = 2 , max = 4 ,message = "이게 디폴트 메세지로 동작??")
+    @Size(min = 2 , max = 4)
     private String username;
 
     @NotBlank
@@ -27,8 +25,6 @@ public class JoinMemberDto {
     @Size(min = 8 , max = 20)
     private String userId;
 
-    @Pattern(regexp = "\\d{2}([0]\\d|[1][0-2])([0][1-9]|[1-2]\\d|[3][0-1])[-]*[1-4]\\d{6}")
-    private String ssn;
 
     @NotBlank
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[~!@#$%^&*()+|=])[A-Za-z\\d~!@#$%^&*()+|=]{8,16}$")
@@ -38,8 +34,11 @@ public class JoinMemberDto {
     private String password2;
 
     @Email
+    @NotBlank
     private String email;
 
+    @Pattern(regexp = "^01(?:0|1|[6-9])[.-]?(\\d{3}|\\d{4})[.-]?(\\d{4})$")
+    @NotBlank
     private String tel;
 
     private LocalDateTime createdDate;
@@ -50,10 +49,9 @@ public class JoinMemberDto {
         return Member.builder()
                 .username(this.username)
                 .userId(this.userId)
-                .ssn(this.ssn)
                 .password(this.password)
-                .email(this.email)
-                .tel(this.tel)
+                .email(Objects.requireNonNullElse(this.email,"등록 안함"))
+                .tel(Objects.requireNonNullElse(this.tel,"등록 안함"))
                 .memberGrade(MemberGrade.NORMAL)
                 .build();
     }

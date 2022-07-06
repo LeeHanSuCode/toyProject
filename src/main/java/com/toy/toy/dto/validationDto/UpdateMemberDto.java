@@ -1,4 +1,4 @@
-package com.toy.toy.dto;
+package com.toy.toy.dto.validationDto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,6 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UpdateMemberDto {
 
-    private Long id;
 
     private String userId;
 

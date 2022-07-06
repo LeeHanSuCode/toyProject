@@ -2,8 +2,8 @@ package com.toy.toy.service;
 
 
 import com.toy.toy.controller.exception_controller.exception.MemberNotFoundException;
-import com.toy.toy.dto.JoinMemberDto;
-import com.toy.toy.dto.UpdateMemberDto;
+import com.toy.toy.dto.validationDto.JoinMemberDto;
+import com.toy.toy.dto.validationDto.UpdateMemberDto;
 import com.toy.toy.entity.Member;
 import com.toy.toy.repository.CommentRepository;
 import com.toy.toy.repository.MemberRepository;
@@ -28,13 +28,11 @@ public class MemberService {
 
     //회원 가입
     @Transactional
-    public Long join(JoinMemberDto joinMemberDto){
-
-        Member member = joinMemberDto.changeEntity();
+    public Member join(Member member){
 
         memberRepository.save(member);
 
-        return member.getId();
+        return member;
     }
 
 
@@ -47,29 +45,23 @@ public class MemberService {
 
     //회원 상세 조회
     //상세보기 -> 회원 모든 정보 공개(비밀번호 제외)
-    public UpdateMemberDto findById(Long memberId){
-        Member member = memberRepository.findById(memberId)
+    public Member findById(Long memberId){
+       return memberRepository.findById(memberId)
                                     .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
-
-        return UpdateMemberDto.builder()
-                .username(member.getUsername())
-                .userId(member.getUserId())
-                .ssn(member.getSsn())
-                .email(member.getEmail())
-                .tel(member.getTel())
-                .build();
     }
 
 
     //회원 수정 하기
     @Transactional
-    public void update(UpdateMemberDto updateMemberDto){
-        Member member = memberRepository.findById(updateMemberDto.getId())
+    public Member update(UpdateMemberDto updateMemberDto , Long id){
+        Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
 
         //변경 감지 이용
         member.updateMember(updateMemberDto.getUsername() , updateMemberDto.getPassword()
                 , updateMemberDto.getEmail() , updateMemberDto.getTel());
+
+        return member;
     }
 
 

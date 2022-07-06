@@ -20,7 +20,6 @@ public class AdminMemberDto {
         this.id = member.getId();
         this.userId = member.getUserId();
         this.username = member.getUsername();
-        this.ssn = member.getSsn();
         this.memberGrade = member.getMemberGrade();
         this.email = member.getEmail();
         this.tel = member.getTel();
@@ -31,7 +30,6 @@ public class AdminMemberDto {
     private Long id;
     private String username;
     private String userId;
-    private String ssn;
     private MemberGrade memberGrade;
     private String email;
     private String tel;

@@ -2,22 +2,17 @@ package com.toy.toy.controller;
 
 
 import com.toy.toy.controller.exception_controller.exception.*;
-import com.toy.toy.dto.JoinMemberDto;
+import com.toy.toy.dto.validationDto.JoinMemberDto;
 import com.toy.toy.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 
 @RestController
@@ -37,11 +32,10 @@ public class TestController {
     }
 
     @PostMapping("/member/join")
-    public String memberJoin(){
+    public void memberJoin(){
         JoinMemberDto joinMemberDto = JoinMemberDto.builder()
                 .userId("dlsdn857758")
                 .username("이한수")
-                .ssn("001101-1195121")
                 .password("please123@@")
                 .password2("please123@@")
                 .email("dlsdn857758@gmail.com")
@@ -49,19 +43,19 @@ public class TestController {
                 .build();
 
 
-       return String.valueOf(memberService.join(joinMemberDto));
+       //return String.valueOf(memberService.join(joinMemberDto));
     }
 
     @PostMapping("/member/join2")
     public ResponseEntity memberJoin2(@Valid @RequestBody JoinMemberDto joinMemberDto , BindingResult bindingResult){
 
-        if(!joinMemberDto.getPassword().equals(joinMemberDto.getPassword2())){
+    /*    if(!joinMemberDto.getPassword().equals(joinMemberDto.getPassword2())){
                 bindingResult.rejectValue("password","NotEquals","비밀번호가 일치하지 않습니다");
         }
 
         if(bindingResult.hasErrors()){
             throw new ValidationNotFieldMatchedException(bindingResult);
-        }
+        }*/
 
         log.info("호출되??333");
         return ResponseEntity.ok().build();

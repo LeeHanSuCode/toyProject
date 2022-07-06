@@ -1,19 +1,8 @@
 package com.toy.toy.service;
-import com.toy.toy.dto.JoinMemberDto;
-import com.toy.toy.entity.Member;
-import com.toy.toy.entity.MemberGrade;
+import com.toy.toy.dto.validationDto.JoinMemberDto;
 import com.toy.toy.repository.CommentRepository;
-import com.toy.toy.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
-
-import static org.mockito.Mockito.*;
 
 @Slf4j
 @RequiredArgsConstructor

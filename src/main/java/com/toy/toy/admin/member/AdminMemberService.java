@@ -44,7 +44,6 @@ public class AdminMemberService {
                             id(m.getId())
                             .username(m.getUsername())
                             .userId(m.getUserId())
-                            .ssn(m.getSsn())
                             .build());
 
     }
