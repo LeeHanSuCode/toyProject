@@ -1,4 +1,4 @@
-package com.toy.toy.admin.board;
+package com.toy.toy.admin.repository;
 
 import com.toy.toy.entity.Board;
 import org.springframework.data.domain.Page;

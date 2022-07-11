@@ -16,8 +16,5 @@ public class ToyApplication {
 		SpringApplication.run(ToyApplication.class, args);
 	}
 
-	@Bean
-	public ModelMapper modelMapper(){
-		return new ModelMapper();
-	}
+
 }

@@ -37,14 +37,12 @@ public class MemberService {
 
 
     //회원 목록 조회
-    //전체 목록에 보여줄 데이터 -> 이름 , 아이디 , 주민번호
     public Page<Member> findAll(Pageable pageable){
         return memberRepository.findAll(pageable);
     }
 
 
     //회원 상세 조회
-    //상세보기 -> 회원 모든 정보 공개(비밀번호 제외)
     public Member findById(Long memberId){
        return memberRepository.findById(memberId)
                                     .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
@@ -53,7 +51,8 @@ public class MemberService {
 
     //회원 수정 하기
     @Transactional
-    public Member update(UpdateMemberDto updateMemberDto , Long id){
+    public void update(UpdateMemberDto updateMemberDto , Long id){
+
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
 
@@ -61,7 +60,6 @@ public class MemberService {
         member.updateMember(updateMemberDto.getUsername() , updateMemberDto.getPassword()
                 , updateMemberDto.getEmail() , updateMemberDto.getTel());
 
-        return member;
     }
 
 

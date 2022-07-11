@@ -21,7 +21,7 @@ public class JoinMemberDto {
     private String username;
 
     @NotBlank
-    @Pattern(regexp = "[a-zA-Z0-9]{8,20}")
+    @Pattern(regexp = "^[a-zA-Z0-9]*$")
     @Size(min = 8 , max = 20)
     private String userId;
 
@@ -33,15 +33,17 @@ public class JoinMemberDto {
 
     private String password2;
 
-    @Email
+    @Pattern(regexp = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$")
     @NotBlank
     private String email;
 
     @Pattern(regexp = "^01(?:0|1|[6-9])[.-]?(\\d{3}|\\d{4})[.-]?(\\d{4})$")
     @NotBlank
     private String tel;
+    @NotNull
+    @AssertTrue
+    private Boolean isIdCheck;
 
-    private LocalDateTime createdDate;
 
 
     //JoinMemberDto -> Member

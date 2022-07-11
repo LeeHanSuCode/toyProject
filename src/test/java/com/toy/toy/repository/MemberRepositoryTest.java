@@ -39,7 +39,6 @@ class MemberRepositoryTest {
             Member member1 = Member.builder()
                     .username("이한수1" )
                     .userId("dlsdn8577581")
-                    .ssn("001101-1195121")
                     .password("please123@@1")
                     .email("dlsdn857751@gmail.com")
                     .tel("01073633381")
@@ -49,7 +48,6 @@ class MemberRepositoryTest {
         Member member2 = Member.builder()
                 .username("이한수2" )
                 .userId("dlsdn8577582")
-                .ssn("001101-1195122")
                 .password("please123@@2")
                 .email("dlsdn857752@gmail.com")
                 .tel("01073633382")
@@ -84,8 +82,6 @@ class MemberRepositoryTest {
         assertThat(saveMember.getUserId()).isEqualTo(joinMember.getUserId());
         assertThat(saveMember.getUsername()).isEqualTo(joinMember.getUsername());
         assertThat(saveMember.getPassword()).isEqualTo(joinMember.getPassword());
-
-        assertThat(saveMember.getSsn()).isEqualTo(joinMember.getSsn());
         assertThat(saveMember.getEmail()).isEqualTo(joinMember.getEmail());
         assertThat(saveMember.getTel()).isEqualTo(joinMember.getTel());
         assertThat(saveMember.getMemberGrade()).isEqualTo(joinMember.getMemberGrade());
@@ -97,7 +93,6 @@ class MemberRepositoryTest {
        return Member.builder()
                 .username("이한수")
                 .userId("dlsdn857758")
-                .ssn("001101-1195128")
                 .password("please123@@")
                 .email("dlsdn857758@gmail.com")
                 .tel("01073633380")

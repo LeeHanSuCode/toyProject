@@ -1,11 +1,11 @@
-package com.toy.toy.admin.board;
+package com.toy.toy.admin.service;
 
-import com.toy.toy.admin.board.dto.AdminBoardDto;
+import com.toy.toy.admin.dto.AdminBoardDto;
+import com.toy.toy.admin.repository.AdminBoardRepository;
 import com.toy.toy.controller.exception_controller.exception.BoardNotFoundException;
 import com.toy.toy.dto.CommentDto;
 import com.toy.toy.dto.FilesDto;
 import com.toy.toy.entity.Board;
-import com.toy.toy.entity.Comment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

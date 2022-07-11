@@ -1,4 +1,4 @@
-package com.toy.toy.admin.member;
+package com.toy.toy.admin.repository;
 
 import com.toy.toy.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,4 +1,4 @@
-package com.toy.toy.admin.member;
+package com.toy.toy.admin.dto;
 
 
 import com.toy.toy.entity.Member;

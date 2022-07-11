@@ -4,6 +4,7 @@ import com.toy.toy.entity.mappedEntity.BaseEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-public class Member extends BaseEntity {
+public class Member extends BaseEntity{
 
 
 
@@ -40,12 +41,22 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member")
     private List<Comment> comments = new ArrayList<>();
 
+
     //회원 수정
     public void updateMember(String username , String password , String email , String tel){
+        if(username != null){
             this.username = username;
+        }
+        if(password != null){
             this.password = password;
+        }
+        if(email != null){
             this.email = email;
+        }
+        if(tel != null){
             this.tel = tel;
+        }
+
     }
 
 

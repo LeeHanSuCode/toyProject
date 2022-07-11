@@ -1,4 +1,4 @@
-package com.toy.toy.admin.board.dto;
+package com.toy.toy.admin.dto;
 
 import com.toy.toy.dto.CommentDto;
 import com.toy.toy.dto.FilesDto;

@@ -19,7 +19,6 @@ class MemberServiceTest {
         return JoinMemberDto.builder()
                 .username("이한수")
                 .userId("dlsdn857758")
-                .ssn("001101-1195121")
                 .password("please123@@")
                 .password2("please123@@")
                 .email("dlsdn857758@gmail.com")
