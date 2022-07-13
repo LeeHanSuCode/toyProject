@@ -44,16 +44,16 @@ public class Member extends BaseEntity{
 
     //회원 수정
     public void updateMember(String username , String password , String email , String tel){
-        if(username != null){
+        if(username!= null && !username.isBlank()){
             this.username = username;
         }
-        if(password != null){
+        if(password != null && !password.isBlank()){
             this.password = password;
         }
-        if(email != null){
+        if(email != null && !email.isBlank()){
             this.email = email;
         }
-        if(tel != null){
+        if(tel != null && !tel.isBlank()){
             this.tel = tel;
         }
 

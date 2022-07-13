@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor
-public class UpdateMemberDto {
+public class UpdateMemberDto implements ValidationDto {
 
     @Size(min = 2,max = 4)
     private String username;
@@ -27,6 +27,5 @@ public class UpdateMemberDto {
     @Pattern(regexp = "^01(?:0|1|[6-9])[.-]?(\\d{3}|\\d{4})[.-]?(\\d{4})$")
     private String tel;
 
-    private boolean isUsernameCheck;
 
 }

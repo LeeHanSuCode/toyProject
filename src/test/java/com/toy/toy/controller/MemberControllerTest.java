@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,22 +27,28 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.restdocs.request.RequestDocumentation;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureRestDocs(uriScheme = "https",uriHost = "api.member.com" , uriPort = 443)
+@ExtendWith(RestDocumentationExtension.class)
 @Slf4j
 class MemberControllerTest {
 
@@ -54,22 +61,23 @@ class MemberControllerTest {
     @Autowired
     private MemberRepository memberRepository;
 
-    @PersistenceContext
-    private EntityManager em;
 
     private final static String JOIN_EXCEPTION_STATUS = "BAD_REQUEST";
     private final static String JOIN_EXCEPTION_PATH = "uri=/members";
 
 
-    private Member beforeMember(){
-        return Member.builder()
+    private Member beforeMember(String userId){
+        Member member = Member.builder()
                 .username("이한수")
-                .userId("hslee0710")
+                .userId(userId)
                 .password("asd123!@#")
                 .email("dhfl0710@naver.com")
                 .tel("010-1111-1111")
                 .memberGrade(MemberGrade.NORMAL)
                 .build();
+
+        return memberRepository.save(member);
+
     }
 
     @Test
@@ -103,12 +111,40 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$._links.self.href").exists())
                 .andExpect(jsonPath("$._links.update-member.href").exists())
                 .andExpect(jsonPath("$._links.delete-member.href").exists())
+                .andDo(document("join-member",
+                            requestFields(
+                                    fieldWithPath("username").description("회원 이름"),
+                                    fieldWithPath("userId").description("회원 아이디"),
+                                    fieldWithPath("password").description("비밀번호"),
+                                    fieldWithPath("password2").description("비밀번호 확인"),
+                                    fieldWithPath("email").description("이메일"),
+                                    fieldWithPath("tel").description("휴대폰 번호"),
+                                    fieldWithPath("isIdCheck").description("아이디 중복 확인 여부")
+                            ),
+                        responseFields(
+                                fieldWithPath("id").description("식별자"),
+                                fieldWithPath("userId").description("회원 아이디"),
+                                fieldWithPath("email").description("이메일"),
+                                fieldWithPath("tel").description("휴대폰 번호"),
+                                fieldWithPath("username").description("회원 이름"),
+                                fieldWithPath("_links.self.href").description("my self 링크"),
+                                fieldWithPath("_links.update-member.href").description("회원 수정 링크"),
+                                fieldWithPath("_links.delete-member.href").description("회원 삭제 링크"),
+                                fieldWithPath("_links.profile.href").description("profile")
+                        ),
+                        links(
+                            linkWithRel("self").description("link to self"),
+                            linkWithRel("update-member").description("회원 수정 링크"),
+                            linkWithRel("delete-member").description("회원 삭제 링크"),
+                            linkWithRel("profile").description("link to profile")
+
+                        )
+                        ))
 
         ;
     }
 
 
-    //실패케이스는 예외별로 구성하자. -> 타입변환실패 , 유효성 검증 실패
     @Test
     @DisplayName("회원 가입 실패 케이스 - 모두 null 데이터를 넘길 경우.")
     void joinMember_fail_beanValidation_null() throws Exception{
@@ -221,6 +257,22 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.fieldErrors.tel.messages.length()").value(1))
                 .andExpect(jsonPath("$.fieldErrors.username.messages.length()").value(1))
                 .andExpect(jsonPath("$.fieldErrors.isIdCheck.messages.length()").value(1))
+                .andDo(document("join-member-fail",
+                        responseFields(
+                                fieldWithPath("timestamp").description("발생한 시간"),
+                                fieldWithPath("status").description("예외 상태"),
+                                fieldWithPath("path").description("요청 uri"),
+                                fieldWithPath("fieldErrors").description("발생한 에외 목록"),
+                                fieldWithPath("fieldErrors.*.messages").description("예외 메세지"),
+                                fieldWithPath("fieldErrors.*.fieldName").description("예외 발생 필드"),
+                                fieldWithPath("fieldErrors.*.rejectedValue").description("거절된 값"),
+                                fieldWithPath("_links.main-page.href").description("메인 페이지 링크"),
+                                fieldWithPath("_links.profile.href").description("profile")
+                        ),
+                        links(linkWithRel("main-page").description("link to mainPage"),
+                                linkWithRel("profile").description("link to profile"))
+                        )
+                )
 
 
         ;
@@ -229,15 +281,14 @@ class MemberControllerTest {
 
 
     @Test
-    @DisplayName("글 1개 조회")
+    @DisplayName("회원 한명 조회")
     void findMember_success() throws Exception{
         //given
-        Member member = beforeMember();
-        memberRepository.save(member);
+        Member member = beforeMember("hslee0000");
 
 
         //expected
-        mockMvc.perform(get("/members/{id}",member.getId())
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/members/{id}",member.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaTypes.HAL_JSON)
                 )
@@ -251,18 +302,75 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$._links.self").exists())
                 .andExpect(jsonPath("$._links.update-member").exists())
                 .andExpect(jsonPath("$._links.delete-member").exists())
+                .andDo(document("find-member",
+                        pathParameters(
+                                parameterWithName("id").description("회원 식별자")
+                        ),
+                        responseFields(
+                                fieldWithPath("id").description("식별자"),
+                                fieldWithPath("userId").description("회원 아이디"),
+                                fieldWithPath("email").description("이메일"),
+                                fieldWithPath("tel").description("휴대폰 번호"),
+                                fieldWithPath("username").description("회원 이름"),
+                                fieldWithPath("_links.self.href").description("my self 링크"),
+                                fieldWithPath("_links.update-member.href").description("회원 수정 링크"),
+                                fieldWithPath("_links.delete-member.href").description("회원 삭제 링크"),
+                                fieldWithPath("_links.profile.href").description("profile")
+                        ),
+                        links(
+                                linkWithRel("self").description("link to self"),
+                                linkWithRel("update-member").description("회원 수정 링크"),
+                                linkWithRel("delete-member").description("회원 삭제 링크"),
+                                linkWithRel("profile").description("link to profile")
+
+                        )
+                ))
         ;
 
     }
 
-/*
+    @Test
+    @DisplayName("회원 한명 조회 실패 - 존재하지 않는 식별자 이용")
+    void findMember_fail_notValid_id() throws Exception{
+        //given
+        Long id = 100L;
+
+        //expected
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/members/{id}",id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaTypes.HAL_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.code").value("MemberNotFound"))
+                .andExpect(jsonPath("$.path").value("uri=/members/100"))
+                .andExpect(jsonPath("$.message").value("존재하지 않는 회원입니다."))
+                .andExpect(jsonPath("$._links.main-page.href").value("http://www.localhost:8080"))
+                .andDo(document( "find-member-fail",
+                        pathParameters(
+                                parameterWithName("id").description("회원 식별자")
+                        ),
+                        responseFields(
+                                fieldWithPath("timestamp").description("발생한 시간"),
+                                fieldWithPath("code").description("예외 상태"),
+                                fieldWithPath("path").description("요청 uri"),
+                                fieldWithPath("message").description("예외 메세지"),
+                                fieldWithPath("_links.main-page.href").description("메인 페이지 링크"),
+                                fieldWithPath("_links.profile.href").description("profile")
+                        ),
+                        links(linkWithRel("main-page").description("link to mainPage"),
+                                linkWithRel("profile").description("link to profile"))
+                        ))
+                ;
+    }
+
 
     @Test
-    @DisplayName("회원 수정 성공 케이스 - 전부 변경한 경우")
+    @DisplayName("회원 수정 성공 케이스")
     void updateMember_success() throws Exception{
         //given
-        Member member = beforeMember();
-        memberRepository.save(member);
+        Member member = beforeMember("hslee0000");
 
         UpdateMemberDto updateMemberDto = UpdateMemberDto.builder()
                 .username("한수2")
@@ -272,7 +380,65 @@ class MemberControllerTest {
                 .tel("010-2222-2222")
                 .build();
 
-        Member findMember = memberRepository.findById(member.getId()).get();
+        //expected
+        mockMvc.perform(RestDocumentationRequestBuilders.patch("/members/{id}",member.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaTypes.HAL_JSON)
+                        .content(objectMapper.writeValueAsString(updateMemberDto))
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(member.getId()))
+                .andExpect(jsonPath("$.userId").value(member.getUserId()))
+                .andExpect(jsonPath("$.username").value(updateMemberDto.getUsername()))
+                .andExpect(jsonPath("$.email").value(updateMemberDto.getEmail()))
+                .andExpect(jsonPath("$.tel").value(updateMemberDto.getTel()))
+                .andExpect(jsonPath("$._links.member-info").exists())
+                .andDo(document("update-member",
+                        pathParameters(
+                                parameterWithName("id").description("회원 식별자")
+                        ),
+                        requestFields(
+                                fieldWithPath("username").description("회원 이름"),
+                                fieldWithPath("password").description("비밀번호"),
+                                fieldWithPath("password2").description("비밀번호 확인"),
+                                fieldWithPath("email").description("이메일"),
+                                fieldWithPath("tel").description("휴대폰 번호")
+                        ),
+                        responseFields(
+                                fieldWithPath("id").description("식별자"),
+                                fieldWithPath("userId").description("회원 아이디"),
+                                fieldWithPath("email").description("이메일"),
+                                fieldWithPath("tel").description("휴대폰 번호"),
+                                fieldWithPath("username").description("회원 이름"),
+                                fieldWithPath("_links.member-info.href").description("회원 상세 보기 링크"),
+                                fieldWithPath("_links.main-page.href").description("메인 페이지 링크"),
+                                fieldWithPath("_links.profile.href").description("profile")
+                        ),
+                        links(
+                                linkWithRel("member-info").description("회원 상세 보기 링크"),
+                                linkWithRel("main-page").description("link to mainPage"),
+                                linkWithRel("profile").description("link to profile")
+                        )
+                        ))
+        ;
+
+
+    }
+
+    @Test
+    @DisplayName("회원 수정 성공 케이스 - null을 넘기고 아무것도 변경되지 않은 경우.")
+    void updateMember_nullData_success() throws Exception{
+        //given
+        Member member = beforeMember("hslee0000");
+
+        UpdateMemberDto updateMemberDto = UpdateMemberDto.builder()
+                .username(null)
+                .password(null)
+                .password2(null)
+                .email(null)
+                .tel(null)
+                .build();
 
         //expected
         mockMvc.perform(patch("/members/{id}",member.getId())
@@ -282,16 +448,59 @@ class MemberControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value(updateMemberDto.getUsername()))
-
-
-
+                .andExpect(jsonPath("$.id").value(member.getId()))
+                .andExpect(jsonPath("$.userId").value(member.getUserId()))
+                .andExpect(jsonPath("$.username").value(member.getUsername()))
+                .andExpect(jsonPath("$.email").value(member.getEmail()))
+                .andExpect(jsonPath("$.tel").value(member.getTel()))
+                .andExpect(jsonPath("$._links.member-info").exists())
         ;
-
-
     }
 
-*/
+
+    @Test
+    @DisplayName("회원 수정 실패 케이스 - BeanValidation을 어겼을 경우.")
+    void updateMember_blankData_success() throws Exception{
+        //given
+        Member member = beforeMember("hslee0000");
+
+        UpdateMemberDto updateMemberDto = UpdateMemberDto.builder()
+                .username("이")
+                .password("asdf12")
+                .password2("asdf123")
+                .email("hslee0710naver.com")
+                .tel("010010101011")
+                .build();
+
+        //expected
+        mockMvc.perform(patch("/members/{id}",member.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaTypes.HAL_JSON)
+                        .content(objectMapper.writeValueAsString(updateMemberDto))
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.password.messages.length()").value(3))
+                .andExpect(jsonPath("$.fieldErrors.username.messages.length()").value(1))
+                .andExpect(jsonPath("$.fieldErrors.email.messages.length()").value(1))
+                .andExpect(jsonPath("$.fieldErrors.tel.messages.length()").value(1))
+                .andDo(document("update-member-fail",
+                responseFields(
+                        fieldWithPath("timestamp").description("발생한 시간"),
+                        fieldWithPath("status").description("예외 상태"),
+                        fieldWithPath("path").description("요청 uri"),
+                        fieldWithPath("fieldErrors").description("발생한 에외 목록"),
+                        fieldWithPath("fieldErrors.*.messages").description("예외 메세지"),
+                        fieldWithPath("fieldErrors.*.fieldName").description("예외 발생 필드"),
+                        fieldWithPath("fieldErrors.*.rejectedValue").description("거절된 값"),
+                        fieldWithPath("_links.main-page.href").description("메인 페이지 링크"),
+                        fieldWithPath("_links.profile.href").description("profile")
+                ),
+                links(linkWithRel("main-page").description("link to mainPage"),
+                        linkWithRel("profile").description("link to profile"))
+        ))
+        ;
+    }
 
 
 
@@ -299,18 +508,32 @@ class MemberControllerTest {
     @DisplayName("회원 삭제")
     void deleteMember() throws Exception{
         //given
-        Member member = beforeMember();
-        memberRepository.save(member);
+        Member member = beforeMember("hslee0000");
 
         //expected
-        mockMvc.perform(delete("/members/{id}",member.getId())
+        mockMvc.perform(RestDocumentationRequestBuilders.delete("/members/{id}",member.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaTypes.HAL_JSON)
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.greeting").value("Thank you for using it so far"))
-                .andExpect(jsonPath("$._links.main-page").exists());
+                .andExpect(jsonPath("$._links.main-page").exists())
+                .andDo(document("delete-member",
+                            pathParameters(
+                                    parameterWithName("id").description("회원 식별자")
+                            ),
+                            responseFields(
+                                    fieldWithPath("greeting").description("감사 인사"),
+                                    fieldWithPath("_links.main-page.href").description("메인 페이지 링크"),
+                                    fieldWithPath("_links.profile.href").description("profile")
+                            ),
+                            links(
+                                    linkWithRel("main-page").description("link to mainPage"),
+                                    linkWithRel("profile").description("link to profile")
+                            )
+                        ))
+        ;
 
     }
 }

@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 
 import org.springframework.context.NoSuchMessageException;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 
 import org.springframework.http.converter.HttpMessageNotReadableException;
 
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -46,29 +49,41 @@ public class ApiExceptionController extends ResponseEntityExceptionHandler {
 
     //회원 리소스를 찾지 못할 때
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> memberNotFoundHandler(MemberNotFoundException exception , WebRequest request){
-         return commonNotFoundHandler("MemberNotFound" , exception , request);
+    public ResponseEntity memberNotFoundHandler(MemberNotFoundException exception , WebRequest request){
+        EntityModel memberNotFound = commonNotFoundHandler("MemberNotFound", exception, request);
+        memberNotFound.add(Link.of("/index.html#_회원_조회_실패").withRel("profile"));
+
+        return new ResponseEntity<>(memberNotFound,HttpStatus.NOT_FOUND);
     }
 
     //게시글 리소스를 찾지 못할 때
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> boardNotFoundHandler(BoardNotFoundException exception ,  WebRequest request){
+    public ResponseEntity boardNotFoundHandler(BoardNotFoundException exception ,  WebRequest request){
 
-        return commonNotFoundHandler("BoardNotFound" , exception , request);
+        EntityModel boardNotFound = commonNotFoundHandler("BoardNotFound", exception, request);
+        boardNotFound.add(Link.of("/index.html#_회원_조회_실패").withRel("profile"));
+
+        return new ResponseEntity<>(boardNotFound, HttpStatus.NOT_FOUND);
     }
 
     //댓글 리소스를 찾지 못할 때
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> commentNotFoundHandler(CommentNotFoundException exception ,  WebRequest request){
+    public ResponseEntity commentNotFoundHandler(CommentNotFoundException exception ,  WebRequest request){
 
-        return commonNotFoundHandler("CommentsNotFound" , exception , request);
+        EntityModel commentsNotFound = commonNotFoundHandler("CommentsNotFound", exception, request);
+        commentsNotFound.add(Link.of("/index.html#_회원_조회_실패").withRel("profile"));
+
+        return new ResponseEntity<>(commentsNotFound , HttpStatus.NOT_FOUND);
     }
 
     //파일 리소스를 찾지 못할 때
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> filesNotFoundHandler(FilesNotFoundException exception ,  WebRequest request){
+    public ResponseEntity filesNotFoundHandler(FilesNotFoundException exception ,  WebRequest request){
 
-        return commonNotFoundHandler("FilesNotFound" , exception , request);
+        EntityModel filesNotFound = commonNotFoundHandler("FilesNotFound", exception, request);
+        filesNotFound.add(Link.of("/index.html#_회원_조회_실패").withRel("profile"));
+
+        return new ResponseEntity<>(filesNotFound , HttpStatus.NOT_FOUND);
     }
 
 
@@ -78,31 +93,24 @@ public class ApiExceptionController extends ResponseEntityExceptionHandler {
     }
 
     //공통부분 처리(템플릿 역할)
-    private ResponseEntity<ErrorResponse> commonNotFoundHandler(String exceptionName , Exception exception , WebRequest request){
+    private EntityModel commonNotFoundHandler(String exceptionName , Exception exception , WebRequest request){
 
 
-        return new ResponseEntity(ErrorResponse.builder()
+        return EntityModel.of(ErrorResponse.builder()
                 .timestamp(occurExceptionTime())
                 .code(exceptionName)
                 .path(request.getDescription(false))
                 .message(exception.getMessage())
-                .build() , HttpStatus.NOT_FOUND);
+                .build())
+                .add(Link.of("http://www.localhost:8080").withRel("main-page"));
     }
 
 
 /*
     Bean Validation 유효성 검증 통과하지 못하였을 경우.
-
-    에러 스펙
-    -> 발생시간
-    -> 예외상태코드값
-    -> 요청 경로
-    -> 필드에러(메세지 , 거절된 값 , 필드이름)
-    */
-    //
-
+*/
     @ExceptionHandler
-    public ResponseEntity<Object> handleValidationNotFieldMatchedException(
+    public ResponseEntity handleValidationNotFieldMatchedException(
             ValidationNotFieldMatchedException ex, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
@@ -135,8 +143,26 @@ public class ApiExceptionController extends ResponseEntityExceptionHandler {
 
         body.put("fieldErrors", filedErrorsInfo);
 
-        return new ResponseEntity<>(body,HttpStatus.BAD_REQUEST);
+        String profileLink = getProfileLink(ex.getBindingResult().getObjectName());
+
+        return new ResponseEntity(EntityModel.of(body)
+                .add(Link.of("http://www.localhost:8080").withRel("main-page"))
+                .add(Link.of(profileLink).withRel("profile"))
+                ,HttpStatus.BAD_REQUEST);
     }
+
+
+    private String getProfileLink(String objectName){
+
+        if(objectName.equals("joinMemberDto")){
+            return "/docs/index.html#_회원_가입실패";
+        }else if(objectName.equals("updateMemberDto")){
+            return "/index.html#_회원_수정실패";
+        }
+
+        return null;
+    }
+
 
 
 

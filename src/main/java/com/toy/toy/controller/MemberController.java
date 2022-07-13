@@ -1,5 +1,6 @@
 package com.toy.toy.controller;
 
+import com.toy.toy.StaticVariable;
 import com.toy.toy.controller.exception_controller.exception.ValidationNotFieldMatchedException;
 import com.toy.toy.dto.responseDto.MemberResponse;
 import com.toy.toy.dto.validationDto.JoinMemberDto;
@@ -26,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.toy.toy.StaticVariable.*;
 import static com.toy.toy.dto.responseDto.MemberResponse.changeMemberResponse;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
@@ -62,11 +64,10 @@ public class MemberController {
                .add(locationBuilder.withSelfRel())
                .add(locationBuilder.withRel("update-member"))
                .add(locationBuilder.withRel("delete-member"))
+                       .add(Link.of("/docs/index.html#_회원_가입").withRel("profile"))
        );
 
     }
-
-
 
 
 
@@ -82,6 +83,7 @@ public class MemberController {
                 .add(linkBuilder.withSelfRel())
                 .add(linkBuilder.withRel("update-member"))
                 .add(linkBuilder.withRel("delete-member"))
+                        .add(Link.of("/docs/index.html#_회원_조회").withRel("profile"))
         );
     }
 
@@ -109,6 +111,8 @@ public class MemberController {
         return ResponseEntity.ok().body(
                 EntityModel.of(changeMemberResponse(findMember))
                 .add(linkBuilder.withRel("member-info"))
+                        .add(Link.of("/docs/index.html#_회원_수정").withRel("profile"))
+                        .add(Link.of(MAIN_PAGE).withRel("main-page"))
         );
     }
 
@@ -125,8 +129,8 @@ public class MemberController {
 
         return ResponseEntity.ok()
                 .body(EntityModel.of(greeting)
-                        .add(Link.of("http://www.localhost:8080")
-                                .withRel("main-page")));
+                        .add(Link.of("/docs/index.html#_회원_삭제").withRel("profile"))
+                        .add(Link.of(MAIN_PAGE).withRel("main-page")));
     }
 
 

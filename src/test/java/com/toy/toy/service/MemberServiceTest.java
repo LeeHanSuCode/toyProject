@@ -3,14 +3,17 @@ import com.toy.toy.dto.validationDto.JoinMemberDto;
 import com.toy.toy.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.web.servlet.MockMvc;
 
 @Slf4j
-@RequiredArgsConstructor
 class MemberServiceTest {
 
-    private final BoardService boardService;
-    private final CommentRepository commentRepository;
-    private final MemberService memberService;
+
+    private BoardService boardService;
+    private CommentRepository commentRepository;
+    private MemberService memberService;
 
 
 

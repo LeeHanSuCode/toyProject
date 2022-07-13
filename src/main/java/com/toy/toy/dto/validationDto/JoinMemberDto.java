@@ -6,7 +6,6 @@ import com.toy.toy.entity.MemberGrade;
 import lombok.*;
 
 import javax.validation.constraints.*;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
@@ -14,7 +13,7 @@ import java.util.Objects;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @Builder
-public class JoinMemberDto {
+public class JoinMemberDto implements ValidationDto {
 
     @NotBlank
     @Size(min = 2 , max = 4)
