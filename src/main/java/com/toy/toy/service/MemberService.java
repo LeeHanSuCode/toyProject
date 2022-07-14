@@ -36,11 +36,6 @@ public class MemberService {
     }
 
 
-    //회원 목록 조회
-    public Page<Member> findAll(Pageable pageable){
-        return memberRepository.findAll(pageable);
-    }
-
 
     //회원 상세 조회
     public Member findById(Long memberId){
@@ -72,12 +67,12 @@ public class MemberService {
                 .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
 
         //회원이 작성한 댓글들을 삭제
-        if(!member.getComments().isEmpty()){
+        if(member.getComments()!=null && !member.getComments().isEmpty()){
             commentRepository.deleteByMember(member);
         }
 
         //회원이 작성한 게시글과 거기에 작성된 댓글,파일 삭제
-        if(!member.getBoards().isEmpty()){
+        if(member.getComments()!=null && !member.getBoards().isEmpty()){
             boardService.deleteByMember(member);
         }
 
