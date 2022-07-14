@@ -1,6 +1,7 @@
 package com.toy.toy.service;
 
 import com.toy.toy.entity.Board;
+import com.toy.toy.entity.LikeChoice;
 import com.toy.toy.entity.Likes;
 import com.toy.toy.entity.Member;
 import com.toy.toy.repository.BoardRepository;
@@ -20,6 +21,14 @@ public class LikeService {
     private final LikeRepository likeRepository;
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
+
+    //조회
+    public Integer isClickLike(Long boardId , Long memberId){
+        Optional<Likes> findLike = likeRepository.findByMemberAndBoard(boardId, memberId);
+
+        return (!findLike.isPresent())? 0 : (findLike.get().equals(LikeChoice.LIKE)) ? 1 : -1;
+    }
+
 
     //좋아요 추가
     public Integer add(String mode, Long boardId , Long memberId){
@@ -51,4 +60,9 @@ public class LikeService {
         return like.getBoard().getLikeCount();
     }
 
+
+    //삭제
+    public void deletedByBoard(Long boardId){
+       likeRepository.deletedByBoard(boardId);
+    }
 }

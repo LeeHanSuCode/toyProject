@@ -1,6 +1,7 @@
 package com.toy.toy.controller.exception_controller;
 
 
+import com.toy.toy.controller.CustomEntityModel;
 import com.toy.toy.controller.MemberController;
 import com.toy.toy.controller.exception_controller.exception.*;
 
@@ -85,6 +86,15 @@ public class ApiExceptionController extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(filesNotFound , HttpStatus.NOT_FOUND);
     }
+
+    //로그인 정보가 일치하지 않을 떄
+    @ExceptionHandler
+    public ResponseEntity loginInfoNotMatchedHandler(LoginInfoNotMatchedException exception , WebRequest request) {
+        EntityModel loginInfoNotMatched = commonNotFoundHandler("LoginInfoNotMatchedException", exception, request);
+
+        return new ResponseEntity<>(loginInfoNotMatched,HttpStatus.BAD_REQUEST);
+    }
+
 
 
     //에러 발생한 시간 반환(format)

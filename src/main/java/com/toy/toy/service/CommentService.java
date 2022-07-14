@@ -80,4 +80,8 @@ public class CommentService {
 
         commentRepository.delete(comment);
     }
+
+    public void deletedByBoard(Long boardId){
+        commentRepository.deleteByBoard(boardId);
+    }
 }

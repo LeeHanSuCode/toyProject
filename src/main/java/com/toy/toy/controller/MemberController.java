@@ -59,8 +59,10 @@ public class MemberController {
 
        WebMvcLinkBuilder locationBuilder = getWebMvcLinkBuilder(joinMember.getId());
 
+      CustomEntityModel.of(joinMember);
+
        return ResponseEntity.created(locationBuilder.toUri()).body(
-               EntityModel.of(changeMemberResponse(joinMember))
+               CustomEntityModel.of(changeMemberResponse(joinMember))
                .add(locationBuilder.withSelfRel())
                .add(locationBuilder.withRel("update-member"))
                .add(locationBuilder.withRel("delete-member"))

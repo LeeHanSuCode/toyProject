@@ -1,11 +1,9 @@
 package com.toy.toy.admin.dto;
 
 import com.toy.toy.dto.CommentDto;
-import com.toy.toy.dto.FilesDto;
-import com.toy.toy.entity.Board;
+import com.toy.toy.dto.responseDto.FilesResponse;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -20,6 +18,6 @@ public class AdminBoardDto {
     private String writer;
 
     //상세보기에서는 아래 필드까지 필요
-    private List<FilesDto> filesDtos;
+    private List<FilesResponse> filesDtos;
     private List<CommentDto> commentDtos;
 }

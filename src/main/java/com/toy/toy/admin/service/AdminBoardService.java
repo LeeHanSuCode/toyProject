@@ -4,7 +4,7 @@ import com.toy.toy.admin.dto.AdminBoardDto;
 import com.toy.toy.admin.repository.AdminBoardRepository;
 import com.toy.toy.controller.exception_controller.exception.BoardNotFoundException;
 import com.toy.toy.dto.CommentDto;
-import com.toy.toy.dto.FilesDto;
+import com.toy.toy.dto.responseDto.FilesResponse;
 import com.toy.toy.entity.Board;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -59,8 +59,8 @@ public class AdminBoardService {
                 .findOneFetchMemberById(id)
                 .orElseThrow(() -> new BoardNotFoundException("게시글이 존재하지 않습니다."));
 
-        List<FilesDto> files = board.getFiles().stream()
-                .map(f -> new FilesDto(f.getId(), f.getUploadFilename(), f.getServerFilename()))
+        List<FilesResponse> files = board.getFiles().stream()
+                .map(f -> new FilesResponse(f.getId(), f.getUploadFilename(), f.getServerFilename()))
                 .collect(Collectors.toList());
 
         List<CommentDto> comments = board.getComments().stream()
