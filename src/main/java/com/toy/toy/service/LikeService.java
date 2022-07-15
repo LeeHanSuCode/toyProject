@@ -22,29 +22,31 @@ public class LikeService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
-    //조회
-    public Integer isClickLike(Long boardId , Long memberId){
+
+    //Like 존재 조회
+    public String isClickLike(Long boardId , Long memberId){
         Optional<Likes> findLike = likeRepository.findByMemberAndBoard(boardId, memberId);
 
-        return (!findLike.isPresent())? 0 : (findLike.get().equals(LikeChoice.LIKE)) ? 1 : -1;
+        LikeChoice likeChoice =(!findLike.isPresent())? LikeChoice.NOTHING : (findLike.get().equals(LikeChoice.LIKE)) ? LikeChoice.LIKE : LikeChoice.HATE;
+        return likeChoice.toString();
     }
 
 
     //좋아요 추가
-    public Integer add(String mode, Long boardId , Long memberId){
+    public void add(Board board , Member member){
 
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalStateException());
-
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalStateException());
-
-        Likes like = new Likes(board, member, mode);
+        Likes like = new Likes(board, member);
+        like.addLikes();
 
         likeRepository.save(like);
-        board.changeLikeCount(like.getLikeChoice().name());         //누른 버튼으로 인한 board에 추가.
+    }
 
-        return board.getLikeCount();                                //좋아요 갯수 반환.
+    //싫어요 추가
+    public void subtract(Board board , Member member){
+        Likes like = new Likes(board, member);
+        like.subtractLikes();
+
+        likeRepository.save(like);
     }
 
 

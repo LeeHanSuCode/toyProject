@@ -6,10 +6,10 @@ import com.toy.toy.controller.exception_controller.exception.ValidationNotFieldM
 import com.toy.toy.dto.LoginMemberDto;
 import com.toy.toy.dto.responseDto.BoardResponse;
 import com.toy.toy.dto.responseDto.FilesResponse;
+import com.toy.toy.dto.responseDto.PageAndObjectResponse;
 import com.toy.toy.dto.validationDto.UpdateBoardDto;
 import com.toy.toy.dto.validationDto.WriteBoardDto;
 import com.toy.toy.entity.*;
-import com.toy.toy.repository.LikeRepository;
 import com.toy.toy.service.*;
 
 import lombok.RequiredArgsConstructor;
@@ -26,6 +26,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,27 +47,49 @@ public class BoardController {
     private final FileTransfer fileTransfer;
     private final CommentService commentService;
 
+
+/*    @PostConstruct
+    public void init(){
+        Member findMember = memberService.findById(7L);
+        for(int i=0 ; i<100 ; i++){
+           boardService.register(Board.builder()
+                   .subject(i + "제목")
+                   .content(i + "내용")
+                   .readCount(0)
+                   .likeCount(0)
+                   .member(findMember)
+                   .build());
+       }
+    }*/
+
     //게시글 목록
     @GetMapping
-    public ResponseEntity findBoards(@PageableDefault(page=0,size = 10,sort = "id",direction = Sort.Direction.DESC)
-                                                 Pageable pageable){
+    public ResponseEntity findBoards(@PageableDefault(sort = "id",direction = Sort.Direction.DESC) Pageable pageable){
 
-        //페이지 정보 넘겨서 게시글을 가져온다.
-        //게시글에 맞는 파일 목록을 가져 온다. -> 어떻게??
-        //boardService.findAll(pageable)
+        Page<Board> pageBoard = boardService.findAll(pageable);
 
-        return ResponseEntity.ok().build();
+        //게시글 정보
+        List<EntityModel<BoardResponse>> collect = pageBoard.getContent()
+                .stream().map(
+                        b -> EntityModel.of(new BoardResponse(b, b.getMember()))
+                                .add(linkTo(BoardController.class).slash(b.getId()).withRel("board-info"))
+                ).collect(Collectors.toList());
+
+        //페이지 정보
+        PageCalculator pageCalculator = new PageCalculator(10, pageBoard.getTotalPages(), pageBoard.getNumber() + 1);
+
+        PageAndObjectResponse<List> listPageResponse = new PageAndObjectResponse<>(collect ,pageCalculator);
+
+        return ResponseEntity.ok().body(listPageResponse);
     }
 
     //게시글 보기
     @GetMapping("/{id}")
     public ResponseEntity findOne(@PathVariable Long id , @Login LoginMemberDto loginMemberDto){
 
-        Board findBoard = boardService.findById(id, loginMemberDto);
+        Board findBoard = boardService.findById(id);
 
-        List<FilesResponse> files = fileService.getFiles(findBoard);
-
-        Integer choice = 0;
+        String choice = "";
 
         if(loginMemberDto != null) {
             choice = likeService.isClickLike(findBoard.getId(), loginMemberDto.getId());
@@ -74,7 +97,10 @@ public class BoardController {
 
         WebMvcLinkBuilder webMvcLinkBuilder = getWebMvcLinkBuilder(findBoard);
 
-        EntityModel<BoardResponse> entityModel = EntityModel.of(new BoardResponse(findBoard, files))
+        BoardResponse boardResponse = new BoardResponse(findBoard, findBoard.getMember());
+        boardResponse.isCheck(choice);
+
+        EntityModel<BoardResponse> entityModel = EntityModel.of(boardResponse)
                 .add(linkTo(BoardController.class).withRel("board-list"));
 
         if(loginMemberDto!=null){
@@ -89,7 +115,7 @@ public class BoardController {
 
     //게시글 등록.
     @PostMapping
-    public ResponseEntity register(@Login Member loginMember,@RequestBody WriteBoardDto writeBoardDto , BindingResult bindingResult){
+    public ResponseEntity register(@Login Member loginMember, @RequestBody WriteBoardDto writeBoardDto , BindingResult bindingResult){
 
         //validation
         if(bindingResult.hasErrors()){
@@ -112,10 +138,11 @@ public class BoardController {
                     .collect(Collectors.toList());
         }
 
+
         WebMvcLinkBuilder location = getWebMvcLinkBuilder(registerBoard);
 
         return ResponseEntity.created(location.toUri())
-                .body(EntityModel.of( new BoardResponse(registerBoard, saveFiles))
+                .body(EntityModel.of( new BoardResponse(registerBoard,  findMember))
                         .add(location.withRel("board-update"))
                         .add(location.withRel("board-delete")));
     }

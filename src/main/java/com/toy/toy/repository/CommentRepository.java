@@ -17,10 +17,14 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query("delete from Comment c where c.member=:member")
     public void deleteByMember(@Param("member") Member member);
 
+    @Modifying
+    @Query("delete from Comment c where c.board.id =:boardId")
+    public void deleteByBoard(@Param("boardId") Long boardId);
+
 
     @Modifying
-    @Query("delete from Comment c where c.board.id=:boardId")
-    public void deleteByBoard(@Param("boardId") Long boardId);
+    @Query("delete from Comment c where c.board.id IN (:boardId)")
+    public void deleteByBoardByMember(@Param("boardId") List<Long> boardId);
 
     //이렇게 해도 되나??
     @Query("select c from Comment c where c.board.id = :id")

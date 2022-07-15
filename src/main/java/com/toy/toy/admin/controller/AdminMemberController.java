@@ -24,7 +24,7 @@ public class AdminMemberController {
 
         Page<EntityModel<MemberResponse>> members = adminMemberService.findAll(pageable).map(m ->
                 EntityModel.of(
-                        MemberResponse.builder()
+                                MemberResponse.builder()
                                 .username(m.getUsername())
                                 .userId(m.getUserId())
                                 .email(m.getEmail())

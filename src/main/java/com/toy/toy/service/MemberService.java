@@ -62,7 +62,8 @@ public class MemberService {
 
     //회원 삭제
     @Transactional
-    public void delete(Long memberId){
+    public void
+    delete(Long memberId){
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
 
@@ -72,7 +73,7 @@ public class MemberService {
         }
 
         //회원이 작성한 게시글과 거기에 작성된 댓글,파일 삭제
-        if(member.getComments()!=null && !member.getBoards().isEmpty()){
+        if(member.getBoards()!=null && !member.getBoards().isEmpty()){
             boardService.deleteByMember(member);
         }
 

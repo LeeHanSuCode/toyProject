@@ -13,15 +13,19 @@ import java.time.LocalDateTime;
 public class Likes {
 
     //좋아요와 싫어요의 표현을 mode로 처리.
-    public Likes(Board board , Member member, String mode){
+    public Likes(Board board , Member member){
         this.member = member;
         this.board = board;
-        this.likeChoice = findMode(mode);
     }
 
-    private LikeChoice findMode(String mode) {
-       return mode.equalsIgnoreCase("like") ? LikeChoice.LIKE : LikeChoice.HATE;
+    public void addLikes(){
+        this.likeChoice = LikeChoice.LIKE;
     }
+
+    public void subtractLikes(){
+        this.likeChoice = LikeChoice.HATE;
+    }
+
 
 
     @Id @GeneratedValue

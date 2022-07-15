@@ -16,6 +16,10 @@ public interface FileRepository extends JpaRepository<Files, Long> {
     @Query("delete from Files f where f.board.id=:boardId")
     public void deleteByBoard(@Param("boardId") Long boardId);
 
+    @Modifying
+    @Query("delete from Files f where f.board.id IN (:boardId)")
+    public void deleteByBoardByMember(@Param("boardId") List<Long> boardId);
+
 
     @Query("select f from Files f where f.board =:board")
     public List<Files> findByBoard(@Param("board") Board board);

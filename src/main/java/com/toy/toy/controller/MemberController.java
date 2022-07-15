@@ -6,6 +6,9 @@ import com.toy.toy.dto.responseDto.MemberResponse;
 import com.toy.toy.dto.validationDto.JoinMemberDto;
 import com.toy.toy.dto.validationDto.UpdateMemberDto;
 import com.toy.toy.entity.Member;
+import com.toy.toy.service.BoardService;
+import com.toy.toy.service.CommentService;
+import com.toy.toy.service.LikeService;
 import com.toy.toy.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +41,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 public class MemberController {
 
     private final MemberService memberService;
-
 
 
 
@@ -122,6 +124,7 @@ public class MemberController {
     //회원삭제
     @DeleteMapping("/{id}")
     public ResponseEntity delete(@PathVariable Long id){
+
 
         memberService.delete(id);
 

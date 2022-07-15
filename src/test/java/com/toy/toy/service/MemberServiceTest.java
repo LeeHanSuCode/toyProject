@@ -36,10 +36,7 @@ class MemberServiceTest {
 
     @Mock
     private MemberRepository memberRepository;
-    @Mock
-    private BoardService boardService;
-    @Mock
-    private CommentRepository commentRepository;
+
     @InjectMocks
     private MemberService memberService;
 
