@@ -69,25 +69,6 @@ public class BoardService {
     }
 
 
-    @Transactional
-    public Board updateAddLikeCount(Long boardId){
-        Board findBoard = boardRepository.findById(boardId)
-                .orElseThrow(() -> new BoardNotFoundException("존재하지 않는 게시글입니다."));
-
-        findBoard.addLikeCount();
-
-        return findBoard;
-    }
-
-    @Transactional
-    public Board subtractLikeCount(Long boardId){
-        Board findBoard = boardRepository.findById(boardId)
-                .orElseThrow(() -> new BoardNotFoundException("존재하지 않는 게시글입니다."));
-
-        findBoard.subtractLikeCount();
-
-        return findBoard;
-    }
 
 
     //게시글 삭제

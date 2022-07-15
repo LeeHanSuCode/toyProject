@@ -26,7 +26,6 @@ public class Board extends BaseEntity {
 
     private Integer readCount;
 
-    private Integer likeCount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
@@ -50,20 +49,4 @@ public class Board extends BaseEntity {
         this.content = content;
     }
 
-    //좋아요
-    public void addLikeCount(){
-        this.likeCount +=1;
-    }
-
-    //좋아요
-    public void subtractLikeCount(){
-        this.likeCount -=1;
-    }
-
-    //좋아요 증감 삭제
-    public void deleteLikeCount(String mode){
-        int num = (mode.equalsIgnoreCase("like")) ? -1 : 1;
-
-        this.likeCount +=num;
-    }
 }

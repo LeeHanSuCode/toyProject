@@ -6,15 +6,11 @@ import com.toy.toy.dto.responseDto.MemberResponse;
 import com.toy.toy.dto.validationDto.JoinMemberDto;
 import com.toy.toy.dto.validationDto.UpdateMemberDto;
 import com.toy.toy.entity.Member;
-import com.toy.toy.service.BoardService;
-import com.toy.toy.service.CommentService;
-import com.toy.toy.service.LikeService;
+
 import com.toy.toy.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
+
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -61,10 +57,8 @@ public class MemberController {
 
        WebMvcLinkBuilder locationBuilder = getWebMvcLinkBuilder(joinMember.getId());
 
-      CustomEntityModel.of(joinMember);
-
        return ResponseEntity.created(locationBuilder.toUri()).body(
-               CustomEntityModel.of(changeMemberResponse(joinMember))
+               EntityModel.of(changeMemberResponse(joinMember))
                .add(locationBuilder.withSelfRel())
                .add(locationBuilder.withRel("update-member"))
                .add(locationBuilder.withRel("delete-member"))

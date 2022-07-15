@@ -46,7 +46,6 @@ public class AdminBoardService {
                         .id(b.getId())
                         .subject(b.getSubject())
                         .readCount(b.getReadCount())
-                        .likeCount(b.getLikeCount())
                         .writer(b.getMember().getUserId())
                         .build());
     }
@@ -71,7 +70,6 @@ public class AdminBoardService {
                 .id(board.getId())
                 .subject(board.getSubject())
                 .readCount(board.getReadCount())
-                .likeCount(board.getLikeCount())
                 .writer(board.getMember().getUserId())
                 .filesDtos(files)
                 .commentDtos(comments)

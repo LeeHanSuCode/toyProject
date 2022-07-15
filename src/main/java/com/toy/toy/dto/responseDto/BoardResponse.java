@@ -1,7 +1,6 @@
 package com.toy.toy.dto.responseDto;
 
 import com.toy.toy.entity.Board;
-import com.toy.toy.entity.LikeChoice;
 import com.toy.toy.entity.Member;
 import lombok.*;
 
@@ -20,14 +19,12 @@ public class BoardResponse {
         this.subject = board.getSubject();
         this.writer = member.getUsername();
         this.boardContent = board.getContent();
-        this.likeCount = board.getLikeCount();
         this.readCount = board.getReadCount();
         this.filesDtoList = board.getFiles()
                 .stream()
                 .map(FilesResponse::new)
                 .collect(Collectors.toList());
 
-        this.isChoice = LikeChoice.NOTHING.toString();
     }
 
     private Long boardId;

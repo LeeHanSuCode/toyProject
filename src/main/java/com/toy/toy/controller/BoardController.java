@@ -43,7 +43,6 @@ public class BoardController {
     private final BoardService boardService;
     private final MemberService memberService;
     private final FileService fileService;
-    private final LikeService likeService;
     private final FileTransfer fileTransfer;
     private final CommentService commentService;
 
@@ -89,16 +88,10 @@ public class BoardController {
 
         Board findBoard = boardService.findById(id);
 
-        String choice = "";
-
-        if(loginMemberDto != null) {
-            choice = likeService.isClickLike(findBoard.getId(), loginMemberDto.getId());
-        }
 
         WebMvcLinkBuilder webMvcLinkBuilder = getWebMvcLinkBuilder(findBoard);
 
         BoardResponse boardResponse = new BoardResponse(findBoard, findBoard.getMember());
-        boardResponse.isCheck(choice);
 
         EntityModel<BoardResponse> entityModel = EntityModel.of(boardResponse)
                 .add(linkTo(BoardController.class).withRel("board-list"));
@@ -185,8 +178,7 @@ public class BoardController {
     //게시글 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity deleteBoard(@PathVariable Long id){
-        //좋아요 삭제
-        likeService.deletedByBoard(id);
+
         //댓글 삭제
         commentService.deletedByBoard(id);
         //파일 삭제
@@ -196,7 +188,7 @@ public class BoardController {
 
 
         return ResponseEntity.ok()
-                .body(new CustomEntityModel()
+                .body(EntityModel.of(id)
                         .add(linkTo(BoardController.class).withRel("board-list"))
                         .add(Link.of(MAIN_PAGE)));
     }

@@ -26,7 +26,6 @@ public class WriteBoardDto {
                 .content(this.boardContent)
                 .member(member)
                 .readCount(0)
-                .likeCount(0)
                .build()
                ;
     }
