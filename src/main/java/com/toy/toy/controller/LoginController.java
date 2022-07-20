@@ -8,6 +8,7 @@ import com.toy.toy.entity.Member;
 import com.toy.toy.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -66,6 +67,7 @@ public class LoginController {
         LoginResponse loginResponse = LoginResponse.builder()
                 .userId(findMember.getUserId())
                 .id(findMember.getId())
+                .memberGrade(findMember.getMemberGrade())
                 .build();
 
         request.getSession().setAttribute(LOGIN_MEMBER,loginResponse);
@@ -75,6 +77,7 @@ public class LoginController {
                         .add(linkTo(HomeController.class).withRel("main-page"))
                         .add(linkTo(BoardController.class).withRel("board-list"))
                         .add(linkTo(MemberController.class).slash(findMember.getId()).withRel("member-info"))
+                        .add(Link.of("/docs/index.html#_로그인_성공").withRel(PROFILE))
         );
     }
 
@@ -88,6 +91,8 @@ public class LoginController {
         }
 
         return ResponseEntity.ok().body(new RepresentationModel<>()
-                .add(linkTo(HomeController.class).withRel("main-page")));
+                .add(linkTo(HomeController.class).withRel("main-page"))
+                .add(Link.of("/docs/index.html#_로그아웃").withRel(PROFILE))
+        );
     }
 }

@@ -167,9 +167,11 @@ public class ApiExceptionController extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity(EntityModel.of(body)
                 .add(linkTo(HomeController.class).withRel(MAIN_PAGE))
-                //.add(Link.of(profileLink).withRel(PROFILE))
+                .add(Link.of(profileLink).withRel(PROFILE))
                 ,HttpStatus.BAD_REQUEST);
     }
+
+
 
 
     private String getProfileLink(String objectName){
@@ -177,7 +179,9 @@ public class ApiExceptionController extends ResponseEntityExceptionHandler {
         if(objectName.equals("joinMemberDto")){
             return "/docs/index.html#_회원_가입실패";
         }else if(objectName.equals("updateMemberDto")){
-            return "/index.html#_회원_수정실패";
+            return "/docs/index.html#_회원_수정실패";
+        }else if(objectName.equals("loginMemberDto")){
+            return "/docs/index.html#_로그인_실패";
         }
 
         return null;

@@ -11,13 +11,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -30,6 +33,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import static com.toy.toy.StaticVariable.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -38,6 +45,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureRestDocs(uriScheme = "https",uriHost = "api.login.com" , uriPort = 443)
+@ExtendWith(RestDocumentationExtension.class)
 @Slf4j
 @Transactional
 class LoginControllerTest {
@@ -94,6 +103,23 @@ class LoginControllerTest {
                 .andExpect(jsonPath("$._links.main-page.href").exists())
                 .andExpect(jsonPath("$._links.board-list.href").exists())
                 .andExpect(jsonPath("$._links.member-info.href").exists())
+                .andDo(document("login-success",
+                        requestFields(
+                                fieldWithPath("userId").description("회원 아이디"),
+                                fieldWithPath("password").description("비밀번호")
+                        ),
+                        responseFields(
+                            fieldWithPath("_links.main-page.href").description("메인 페이지 링크"),
+                            fieldWithPath("_links.board-list.href").description("게시글 목록 링크"),
+                            fieldWithPath("_links.member-info.href").description("회원 정보 링크"),
+                            fieldWithPath("_links.profile.href").description("profile")
+                        ),
+                    links(
+                        linkWithRel(BOARD_LIST).description("게시글 목록 링크"),
+                        linkWithRel(MAIN_PAGE).description("메인 페이지 링크"),
+                        linkWithRel(MEMBER_INFO).description("회원 정보 링크"),
+                            linkWithRel(PROFILE).description("link to profile")
+                    )))
         ;
 
     }
@@ -106,7 +132,6 @@ class LoginControllerTest {
 
         LoginMemberDto loginMemberDto = LoginMemberDto.builder()
                 .build();
-
 
         //expected
         mockMvc.perform(post("/login")
@@ -161,6 +186,26 @@ class LoginControllerTest {
                 .andExpect(jsonPath("$.fieldErrors.userId.messages[0]").value("존재하지 않는 회원 입니다."))
                 .andExpect(jsonPath("$.fieldErrors.userId.fieldName").value("userId"))
                 .andExpect(jsonPath("$.fieldErrors.userId.rejectedValue").value(userId))
+                .andDo(document("login-fail",
+                        requestFields(
+                                fieldWithPath("userId").description("회원 아이디"),
+                                fieldWithPath("password").description("비밀번호")
+                        ),
+                        responseFields(
+                                fieldWithPath("timestamp").description("발생한 시간"),
+                                fieldWithPath("status").description("예외 상태"),
+                                fieldWithPath("path").description("요청 uri"),
+                                fieldWithPath("fieldErrors.*.messages").description("예외 메세지"),
+                                fieldWithPath("fieldErrors.*.fieldName").description("예외 발생 필드"),
+                                fieldWithPath("fieldErrors.*.rejectedValue").description("거절된 값"),
+                                fieldWithPath("_links.main-page.href").description("메인 페이지 링크"),
+                                fieldWithPath("_links.profile.href").description("profile")
+                        ),
+                        links(
+                                linkWithRel(MAIN_PAGE).description("메인 페이지 링크"),
+                                linkWithRel(PROFILE).description("link to profile")
+                        )
+                ))
 
 
 
@@ -181,7 +226,6 @@ class LoginControllerTest {
                 .userId(userId)
                 .password(password)
                 .build();
-
 
         //expected
         mockMvc.perform(post("/login")
@@ -227,6 +271,14 @@ class LoginControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._links.main-page.href").exists())
+                .andDo(document("logout" ,
+                            responseFields(
+                                    fieldWithPath("_links.main-page.href").description("메인 페이지 릴ㅇ크")
+                            ),
+                        links(
+                                linkWithRel(MAIN_PAGE).description("메인 페이지 링크")
+                        )
+                        ))
         ;
     }
 }

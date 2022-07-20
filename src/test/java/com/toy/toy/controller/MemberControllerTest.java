@@ -34,6 +34,7 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.restdocs.request.RequestDocumentation;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.toy.toy.StaticVariable.*;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
@@ -49,6 +50,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs(uriScheme = "https",uriHost = "api.member.com" , uriPort = 443)
 @ExtendWith(RestDocumentationExtension.class)
+@Transactional
 @Slf4j
 class MemberControllerTest {
 
@@ -279,8 +281,8 @@ class MemberControllerTest {
                                 fieldWithPath("_links.main-page.href").description("메인 페이지 링크"),
                                 fieldWithPath("_links.profile.href").description("profile")
                         ),
-                        links(linkWithRel("main-page").description("link to mainPage"),
-                                linkWithRel("profile").description("link to profile"))
+                        links(linkWithRel(MAIN_PAGE).description("link to mainPage"),
+                                linkWithRel(PROFILE).description("link to profile"))
                         )
                 )
 

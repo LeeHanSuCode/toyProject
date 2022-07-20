@@ -64,7 +64,7 @@ class BoardControllerTest {
     }
 */
 
-    @BeforeEach
+/*    @BeforeEach
     void beforeSet_SessionDataArrangement(){
         Member member = Member.builder()
                 .username("이한수")
@@ -158,7 +158,7 @@ class BoardControllerTest {
                 .andExpect(jsonPath("$.fieldErrors.boardContent").exists())
 
         ;
-    }
+    }*/
 
 
    /* @Test
