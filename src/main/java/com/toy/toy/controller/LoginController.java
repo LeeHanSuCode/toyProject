@@ -41,6 +41,7 @@ public class LoginController {
     public ResponseEntity login(@RequestBody @Validated LoginMemberDto loginMemberDto , BindingResult bindingResult,
                                 HttpServletRequest request){
 
+
         if(bindingResult.hasErrors()){
             throw new ValidationNotFieldMatchedException(bindingResult);
         }
@@ -50,6 +51,7 @@ public class LoginController {
 
         if(!optionalFindMember.isPresent()){
             bindingResult.rejectValue("userId" , "NotExist" , "존재하지 않는 회원 입니다.");
+            throw new ValidationNotFieldMatchedException(bindingResult);
         }
 
         Member findMember = optionalFindMember.get();

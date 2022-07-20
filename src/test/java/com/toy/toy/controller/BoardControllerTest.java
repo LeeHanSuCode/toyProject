@@ -79,8 +79,9 @@ class BoardControllerTest {
 
         HttpSession session = mockHttpServletRequest.getSession();
 
-        LoginMemberDto loginMemberDto = new LoginMemberDto();
-        loginMemberDto.setUserId(findMember.getUserId());
+        LoginMemberDto loginMemberDto = LoginMemberDto.builder()
+                .userId(findMember.getUserId())
+                .build();
 
 
         session.setAttribute(StaticVariable.LOGIN_MEMBER , loginMemberDto);

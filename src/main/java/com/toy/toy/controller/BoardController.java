@@ -6,6 +6,7 @@ import com.toy.toy.controller.exception_controller.exception.ValidationNotFieldM
 import com.toy.toy.dto.LoginMemberDto;
 import com.toy.toy.dto.responseDto.BoardResponse;
 import com.toy.toy.dto.responseDto.FilesResponse;
+import com.toy.toy.dto.responseDto.LoginResponse;
 import com.toy.toy.dto.responseDto.PageAndObjectResponse;
 import com.toy.toy.dto.validationDto.UpdateBoardDto;
 import com.toy.toy.dto.validationDto.WriteBoardDto;
@@ -86,7 +87,7 @@ public class BoardController {
 
     //게시글 보기
     @GetMapping("/{id}")
-    public ResponseEntity findOne(@PathVariable Long id , @Login LoginMemberDto loginMemberDto){
+    public ResponseEntity findOne(@PathVariable Long id , @Login LoginResponse loginResponse){
 
         Board findBoard = boardService.findById(id);
 
@@ -96,12 +97,12 @@ public class BoardController {
         BoardResponse boardResponse = new BoardResponse(findBoard, findBoard.getMember());
 
         EntityModel<BoardResponse> entityModel = EntityModel.of(boardResponse)
-                .add(linkTo(BoardController.class).withRel("board-list"));
+                .add(linkTo(BoardController.class).withRel(BOARD_LIST));
 
-        if(loginMemberDto!=null){
+        if(loginResponse!=null && findBoard.getMember().getId().equals(loginResponse.getId())){
             entityModel
-                    .add(webMvcLinkBuilder.withRel("update-board"))
-                    .add(webMvcLinkBuilder.withRel("delete-board"));
+                    .add(webMvcLinkBuilder.withRel(BOARD_UPDATE))
+                    .add(webMvcLinkBuilder.withRel(BOARD_DELETE));
         }
 
         return ResponseEntity.ok().body(entityModel);
@@ -116,8 +117,6 @@ public class BoardController {
             log.info("name={}" ,multipartFile.getName());
         }*/
 
-        log.info("writeBoardDto.content={}" , writeBoardDto.getBoardContent());
-        log.info("writeBoardDto.subject={}" , writeBoardDto.getSubject());
 
         URI uri = linkTo(BoardController.class).toUri();
         return ResponseEntity.created(uri).build();
@@ -126,7 +125,7 @@ public class BoardController {
 
     //게시글 등록.
     @PostMapping()
-    public ResponseEntity register(@Login LoginMemberDto loginMember
+    public ResponseEntity register(@Login LoginResponse loginResponse
             , @RequestPart(value = "filesList" , required = false) List<MultipartFile> filesList
             , @RequestPart @Validated WriteBoardDto writeBoardDto , BindingResult bindingResult){
 
@@ -136,7 +135,7 @@ public class BoardController {
             throw new ValidationNotFieldMatchedException(bindingResult);
         }
 
-        Member findMember = memberService.findById(1L);
+        Member findMember = memberService.findById(loginResponse.getId());
 
         //게시글 저장
        Board registerBoard = boardService.register(writeBoardDto.changeEntity(findMember) , filesList);
@@ -145,8 +144,8 @@ public class BoardController {
 
         return ResponseEntity.created(location.toUri())
                 .body(EntityModel.of( new BoardResponse(registerBoard,  findMember))
-                        .add(location.withRel("board-update"))
-                        .add(location.withRel("board-delete")));
+                        .add(location.withRel(BOARD_UPDATE))
+                        .add(location.withRel(BOARD_DELETE)));
     }
 
 
@@ -170,8 +169,8 @@ public class BoardController {
 
         return ResponseEntity.ok()
                 .body(EntityModel.of(updateBoard.getId())
-                        .add(webMvcLinkBuilder.withRel("board-info"))
-                        .add(linkTo(BoardController.class).withRel("board-list"))
+                        .add(webMvcLinkBuilder.withRel(BOARD_INFO))
+                        .add(linkTo(BoardController.class).withRel(BOARD_LIST))
                 );
     }
 
@@ -183,8 +182,8 @@ public class BoardController {
 
         return ResponseEntity.ok()
                 .body(EntityModel.of(id)
-                        .add(linkTo(BoardController.class).withRel("board-list"))
-                        .add(linkTo(HomeController.class).withRel("main-page")));
+                        .add(linkTo(BoardController.class).withRel(BOARD_LIST))
+                        .add(linkTo(HomeController.class).withRel(MAIN_PAGE)));
     }
 
 

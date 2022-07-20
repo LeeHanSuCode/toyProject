@@ -37,7 +37,7 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest request = (HttpServletRequest)webRequest.getNativeRequest();
         HttpSession session = request.getSession(false);
         log.info("session={}" , Objects.isNull(session));
-        LoginMemberDto attribute = (LoginMemberDto) request.getSession().getAttribute(StaticVariable.LOGIN_MEMBER);
+        LoginResponse loginResponse = (LoginResponse) request.getSession().getAttribute(StaticVariable.LOGIN_MEMBER);
 
         if(session == null){
             return null;

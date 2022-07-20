@@ -7,6 +7,7 @@ import com.toy.toy.controller.exception_controller.exception.*;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.hibernate.EntityMode;
 import org.springframework.context.MessageSource;
 
 import org.springframework.context.NoSuchMessageException;
@@ -49,6 +50,21 @@ public class ApiExceptionController extends ResponseEntityExceptionHandler {
     public ApiExceptionController(MessageSource messageSource){
         this.messageSource = messageSource;
     }
+
+    //로그인 안한 사용자가 로그인이 필요한 서비스에 접근할 떄
+    @ExceptionHandler
+    public ResponseEntity requiredLoginException(RequiredLoginException exception , WebRequest webRequest){
+        Map<String , String> requiredLogin = new HashMap<>();
+        requiredLogin.put("info",exception.getMessage());
+        requiredLogin.put("requestURI",exception.getRequestURI());
+
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                EntityModel.of(requiredLogin)
+                        .add(linkTo(HomeController.class).withRel("main-page")));
+
+    }
+
 
     //회원 리소스를 찾지 못할 때
     @ExceptionHandler
@@ -151,7 +167,7 @@ public class ApiExceptionController extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity(EntityModel.of(body)
                 .add(linkTo(HomeController.class).withRel(MAIN_PAGE))
-                .add(Link.of(profileLink).withRel(PROFILE))
+                //.add(Link.of(profileLink).withRel(PROFILE))
                 ,HttpStatus.BAD_REQUEST);
     }
 
@@ -194,7 +210,7 @@ public class ApiExceptionController extends ResponseEntityExceptionHandler {
     private String getRejectedValue(FieldError fe) {
         String rejectedValue = null;
 
-        if(fe.getRejectedValue() == null){
+        if(fe.getRejectedValue() == null || fe.getRejectedValue().toString().isBlank()){
             rejectedValue = "값이 들어오지 않음";
         }else{
             rejectedValue = fe.getRejectedValue().toString();

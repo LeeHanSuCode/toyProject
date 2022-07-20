@@ -22,11 +22,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
 import static com.toy.toy.StaticVariable.*;
 import static com.toy.toy.dto.responseDto.MemberResponse.changeMemberResponse;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;

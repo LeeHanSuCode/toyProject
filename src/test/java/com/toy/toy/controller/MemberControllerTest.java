@@ -1,6 +1,8 @@
 package com.toy.toy.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.toy.toy.StaticVariable;
+import com.toy.toy.dto.responseDto.LoginResponse;
 import com.toy.toy.dto.validationDto.JoinMemberDto;
 import com.toy.toy.dto.validationDto.UpdateMemberDto;
 import com.toy.toy.entity.Member;
@@ -9,6 +11,7 @@ import com.toy.toy.repository.MemberRepository;
 import com.toy.toy.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,12 +28,14 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.restdocs.request.RequestDocumentation;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static com.toy.toy.StaticVariable.*;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -56,6 +61,8 @@ class MemberControllerTest {
     @Autowired
     private MemberRepository memberRepository;
 
+    private MockHttpSession httpSession = new MockHttpSession();
+
 
     private final static String JOIN_EXCEPTION_STATUS = "BAD_REQUEST";
     private final static String JOIN_EXCEPTION_PATH = "uri=/members";
@@ -73,6 +80,14 @@ class MemberControllerTest {
 
         return memberRepository.save(member);
 
+    }
+     @BeforeEach
+     void setLoginResponse_forSession(){
+        LoginResponse loginResponse = LoginResponse.builder()
+                .id(1L)
+                .userId("hslee0000")
+                .build();
+        httpSession.setAttribute(LOGIN_MEMBER,loginResponse);
     }
 
     @Test
@@ -286,6 +301,7 @@ class MemberControllerTest {
         mockMvc.perform(RestDocumentationRequestBuilders.get("/members/{id}",member.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaTypes.HAL_JSON)
+                                .session(httpSession)
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -330,10 +346,12 @@ class MemberControllerTest {
         //given
         Long id = 100L;
 
+
         //expected
         mockMvc.perform(RestDocumentationRequestBuilders.get("/members/{id}",id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaTypes.HAL_JSON)
+                        .session(httpSession)
                 )
                 .andDo(print())
                 .andExpect(status().isNotFound())
@@ -380,6 +398,7 @@ class MemberControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaTypes.HAL_JSON)
                         .content(objectMapper.writeValueAsString(updateMemberDto))
+                        .session(httpSession)
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -440,6 +459,7 @@ class MemberControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaTypes.HAL_JSON)
                         .content(objectMapper.writeValueAsString(updateMemberDto))
+                        .session(httpSession)
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -459,6 +479,7 @@ class MemberControllerTest {
         //given
         Member member = beforeMember("hslee0000");
 
+
         UpdateMemberDto updateMemberDto = UpdateMemberDto.builder()
                 .username("이")
                 .password("asdf12")
@@ -472,6 +493,7 @@ class MemberControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaTypes.HAL_JSON)
                         .content(objectMapper.writeValueAsString(updateMemberDto))
+                        .session(httpSession)
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -509,6 +531,7 @@ class MemberControllerTest {
         mockMvc.perform(RestDocumentationRequestBuilders.delete("/members/{id}",member.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaTypes.HAL_JSON)
+                                .session(httpSession)
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
