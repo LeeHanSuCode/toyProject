@@ -10,21 +10,18 @@ import lombok.NoArgsConstructor;
 public class FilesResponse {
 
     @Builder
-    public FilesResponse(Long id , String uploadFilename , String serverFilename){
+    public FilesResponse(Long id , String uploadFilename){
         this.id = id;
         this.uploadFilename = uploadFilename;
-        this.serverFilename =serverFilename;
     }
 
     public FilesResponse(Files files){
         this.id = files.getId();
         this.uploadFilename = files.getUploadFilename();
-        this.serverFilename = files.getServerFilename();
     }
 
     private Long id;
     private String uploadFilename;
-    private String serverFilename;
 
 
 

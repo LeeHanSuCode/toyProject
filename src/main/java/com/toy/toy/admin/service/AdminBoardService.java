@@ -3,7 +3,6 @@ package com.toy.toy.admin.service;
 import com.toy.toy.admin.dto.AdminBoardDto;
 import com.toy.toy.admin.repository.AdminBoardRepository;
 import com.toy.toy.controller.exception_controller.exception.BoardNotFoundException;
-import com.toy.toy.dto.CommentDto;
 import com.toy.toy.dto.responseDto.FilesResponse;
 import com.toy.toy.entity.Board;
 import lombok.RequiredArgsConstructor;
@@ -48,18 +47,18 @@ public class AdminBoardService {
                         .readCount(b.getReadCount())
                         .writer(b.getMember().getUserId())
                         .build());
-    }
+    }}
 
 
     //게시글 상세 보기
-    public AdminBoardDto findById(Long id){
+   /* public AdminBoardDto findById(Long id){
 
         Board board = adminBoardRepository
                 .findOneFetchMemberById(id)
                 .orElseThrow(() -> new BoardNotFoundException("게시글이 존재하지 않습니다."));
 
         List<FilesResponse> files = board.getFiles().stream()
-                .map(f -> new FilesResponse(f.getId(), f.getUploadFilename(), f.getServerFilename()))
+                .map(f -> new FilesResponse(f.getId(), f.getUploadFilename()))
                 .collect(Collectors.toList());
 
         List<CommentDto> comments = board.getComments().stream()
@@ -79,3 +78,4 @@ public class AdminBoardService {
 
     //게시글 검색
 }
+*/

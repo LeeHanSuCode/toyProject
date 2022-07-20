@@ -1,6 +1,6 @@
 package com.toy.toy.service;
 
-import com.toy.toy.dto.CommentDto;
+import com.toy.toy.controller.exception_controller.exception.CommentNotFoundException;
 import com.toy.toy.entity.Board;
 import com.toy.toy.entity.Comment;
 import com.toy.toy.entity.Member;
@@ -10,9 +10,6 @@ import com.toy.toy.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -24,7 +21,7 @@ public class CommentService {
     private final MemberRepository memberRepository;
 
     //댓글 등록
-    public Long registry(CommentDto commentDto, Long memberId , Long boardId){
+    public Comment registry (Long memberId , Long boardId,String content){
 
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalStateException());
@@ -33,52 +30,44 @@ public class CommentService {
                 .orElseThrow(() -> new IllegalStateException());
 
         Comment comment = Comment.builder()
-                .content(commentDto.getContent())
+                .content(content)
                 .writer(member.getUserId())
                 .member(member)
                 .board(board)
                 .build();
 
-        commentRepository.save(comment);
-
-        return comment.getId();
+       return commentRepository.save(comment);
     }
 
 
-    //게시글당 댓글 조회 (이건 어차피 비동기 통신으로 처리)
+  /*  //게시글당 댓글 조회 (이건 어차피 비동기 통신으로 처리)
     @Transactional(readOnly = true)
-    public List<CommentDto> findAll(Long boardId){
-        List<Comment> comments = commentRepository.findByBoardId(boardId);
+    public Page<Comment> findAll(Long boardId , Pageable pageable) {
+        Page<Comment> findByBoard = commentRepository.findByBoardId(boardId, pageable);
 
-        if(comments.isEmpty()){
-            return Collections.emptyList();
-        }
-
-        return comments.stream()
-                .map(c -> CommentDto.builder()
-                        .id(c.getId())
-                        .content(c.getContent())
-                        .writer(c.getWriter())
-                        .build())
-                .collect(Collectors.toList());
-    }
+        return findByBoard;
+    }*/
 
 
-    //게시글 수정
-    public void update(CommentDto commentDto){
-        Comment comment = commentRepository.findById(commentDto.getId())
-                                .orElseThrow(() -> new IllegalArgumentException());
+    //댓글 수정
+    public Comment updateComment(Long commentId , String content){
+        Comment findComment = commentRepository.findById(commentId)
+                                .orElseThrow(() -> new CommentNotFoundException("존재하지 않는 댓글 입니다."));
 
-        comment.updateComment(comment.getContent());
+        findComment.updateComment(content);
+
+        return findComment;
     }
 
 
     //게시글 삭제
-    public void delete(Long commentId){
+    public Long delete(Long commentId){
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException());
+                .orElseThrow(() -> new CommentNotFoundException("존재하지 않는 댓글 입니다."));
 
         commentRepository.delete(comment);
+
+        return commentId;
     }
 
     public void deletedByBoard(Long boardId){

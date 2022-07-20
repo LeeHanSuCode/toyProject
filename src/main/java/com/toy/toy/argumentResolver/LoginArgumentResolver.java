@@ -2,6 +2,7 @@ package com.toy.toy.argumentResolver;
 
 import com.toy.toy.StaticVariable;
 import com.toy.toy.dto.LoginMemberDto;
+import com.toy.toy.dto.responseDto.LoginResponse;
 import com.toy.toy.entity.Member;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
@@ -12,6 +13,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Objects;
 
 @Slf4j
 public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
@@ -24,8 +26,7 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
         //2.파라미터의 타입이 Member가 맞는가?
 
         boolean hasLoginAnnotation = parameter.hasParameterAnnotation(Login.class);
-        boolean hasMemberType = LoginMemberDto.class.isAssignableFrom(parameter.getParameterType());
-
+        boolean hasMemberType = LoginResponse.class.isAssignableFrom(parameter.getParameterType());
         return hasLoginAnnotation && hasMemberType;
     }
 
@@ -35,6 +36,8 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
 
         HttpServletRequest request = (HttpServletRequest)webRequest.getNativeRequest();
         HttpSession session = request.getSession(false);
+        log.info("session={}" , Objects.isNull(session));
+        LoginMemberDto attribute = (LoginMemberDto) request.getSession().getAttribute(StaticVariable.LOGIN_MEMBER);
 
         if(session == null){
             return null;

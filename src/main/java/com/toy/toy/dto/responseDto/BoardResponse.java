@@ -5,6 +5,8 @@ import com.toy.toy.entity.Member;
 import lombok.*;
 
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,11 +22,15 @@ public class BoardResponse {
         this.writer = member.getUsername();
         this.boardContent = board.getContent();
         this.readCount = board.getReadCount();
-        this.filesDtoList = board.getFiles()
-                .stream()
-                .map(FilesResponse::new)
-                .collect(Collectors.toList());
 
+        if(board.getFiles().size() > 0) {
+            this.filesDtoList =  board.getFiles()
+                    .stream()
+                    .map(FilesResponse::new)
+                    .collect(Collectors.toList());
+        }else{
+            this.filesDtoList = Collections.emptyList();
+        }
     }
 
     private Long boardId;
@@ -33,18 +39,11 @@ public class BoardResponse {
 
     private String writer;
 
-    private Integer likeCount;
 
     private Integer readCount;
 
     private String boardContent;
 
-    private List<FilesResponse> filesDtoList;
+    private List<FilesResponse> filesDtoList = new ArrayList<>();
 
-    //해당 게시글을 보는 회원이 게시글을 눌렀는지 안눌렀는지 여부확인
-    private String isChoice;
-
-    public void isCheck(String choice){
-        this.isChoice = choice;
-    }
 }

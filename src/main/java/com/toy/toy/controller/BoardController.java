@@ -21,14 +21,19 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.toy.toy.StaticVariable.*;
@@ -42,9 +47,6 @@ public class BoardController {
 
     private final BoardService boardService;
     private final MemberService memberService;
-    private final FileService fileService;
-    private final FileTransfer fileTransfer;
-    private final CommentService commentService;
 
 
 /*    @PostConstruct
@@ -105,32 +107,39 @@ public class BoardController {
         return ResponseEntity.ok().body(entityModel);
     }
 
+    @PostMapping("/test")
+    public ResponseEntity test(/*@RequestPart(value = "filesList" , required = false) List<MultipartFile> filesList*/
+    @RequestPart(value = "writeBoardDto") WriteBoardDto writeBoardDto){
+      /*  log.info("filesList.size={}" , filesList.size());
+        for (MultipartFile multipartFile : filesList) {
+            log.info("name={}" ,multipartFile.getOriginalFilename());
+            log.info("name={}" ,multipartFile.getName());
+        }*/
+
+        log.info("writeBoardDto.content={}" , writeBoardDto.getBoardContent());
+        log.info("writeBoardDto.subject={}" , writeBoardDto.getSubject());
+
+        URI uri = linkTo(BoardController.class).toUri();
+        return ResponseEntity.created(uri).build();
+    }
+
 
     //게시글 등록.
-    @PostMapping
-    public ResponseEntity register(@Login Member loginMember, @RequestBody WriteBoardDto writeBoardDto , BindingResult bindingResult){
+    @PostMapping()
+    public ResponseEntity register(@Login LoginMemberDto loginMember
+            , @RequestPart(value = "filesList" , required = false) List<MultipartFile> filesList
+            , @RequestPart @Validated WriteBoardDto writeBoardDto , BindingResult bindingResult){
+
 
         //validation
         if(bindingResult.hasErrors()){
             throw new ValidationNotFieldMatchedException(bindingResult);
         }
 
-        Member findMember = memberService.findById(loginMember.getId());
+        Member findMember = memberService.findById(1L);
 
         //게시글 저장
-       Board registerBoard = boardService.register(writeBoardDto.changeEntity(findMember));
-
-        List<FilesResponse> saveFiles = new ArrayList<>();
-
-        //파일 저장 및 변환
-        if(writeBoardDto.getFiles().size() > 0) {
-            List<Files> filesList = fileTransfer.changeFiles(writeBoardDto.getFiles(), registerBoard);
-            saveFiles = fileService.save(filesList)
-                    .stream()
-                    .map(FilesResponse::new)
-                    .collect(Collectors.toList());
-        }
-
+       Board registerBoard = boardService.register(writeBoardDto.changeEntity(findMember) , filesList);
 
         WebMvcLinkBuilder location = getWebMvcLinkBuilder(registerBoard);
 
@@ -145,7 +154,8 @@ public class BoardController {
 
     //게시글 수정
     @PatchMapping("/{id}")
-    public ResponseEntity updateBoard(@RequestBody UpdateBoardDto updateBoardDto , BindingResult bindingResult,
+    public ResponseEntity updateBoard(@RequestPart(value = "newFiles" , required = false) List<MultipartFile> newFiles,
+            @RequestPart @Validated UpdateBoardDto updateBoardDto , BindingResult bindingResult,
                                       @PathVariable Long id){
 
         //validation
@@ -153,17 +163,8 @@ public class BoardController {
              throw new ValidationNotFieldMatchedException(bindingResult);
         }
 
-        Board updateBoard = boardService.update(updateBoardDto);
+        Board updateBoard = boardService.update(updateBoardDto , newFiles , id);
 
-
-        //새로운 파일 저장
-        if(updateBoardDto.getNewFiles().size() > 0) {
-            List<Files> newFilesList = fileTransfer.changeFiles(updateBoardDto.getNewFiles(), updateBoard);
-            fileService.save(newFilesList);
-        }
-
-        //넘어오지 않은 파일 제거.
-        fileService.update(updateBoard , updateBoardDto);
 
         WebMvcLinkBuilder webMvcLinkBuilder = getWebMvcLinkBuilder(updateBoard);
 
@@ -174,23 +175,16 @@ public class BoardController {
                 );
     }
 
-
     //게시글 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity deleteBoard(@PathVariable Long id){
 
-        //댓글 삭제
-        commentService.deletedByBoard(id);
-        //파일 삭제
-        fileService.deletedByBoard(id);
-        //게시글 삭제
         boardService.delete(id);
-
 
         return ResponseEntity.ok()
                 .body(EntityModel.of(id)
                         .add(linkTo(BoardController.class).withRel("board-list"))
-                        .add(Link.of(MAIN_PAGE)));
+                        .add(linkTo(HomeController.class).withRel("main-page")));
     }
 
 

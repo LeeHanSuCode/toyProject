@@ -4,8 +4,10 @@ import com.toy.toy.entity.mappedEntity.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -15,7 +17,7 @@ public class Files extends BaseEntity {
     public Files(String uploadFilename , String serverFilename , Board board){
         this.uploadFilename = uploadFilename;
         this.serverFilename = serverFilename;
-        this.board = board;
+        addBoardToFile(board);
     }
 
     @Id @GeneratedValue

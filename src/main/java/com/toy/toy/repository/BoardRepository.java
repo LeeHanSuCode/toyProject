@@ -25,6 +25,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Query(value = "select b from Board b join fetch b.member",countQuery = "select count(b.id) from Board b")
     public Page<Board> findAllWithMember(Pageable pageable);
+
 }
 
 

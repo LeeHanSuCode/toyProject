@@ -1,8 +1,8 @@
 package com.toy.toy.controller.exception_controller;
 
 
-import com.toy.toy.controller.CustomEntityModel;
-import com.toy.toy.controller.MemberController;
+import com.toy.toy.StaticVariable;
+import com.toy.toy.controller.HomeController;
 import com.toy.toy.controller.exception_controller.exception.*;
 
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +35,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import static com.toy.toy.StaticVariable.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 
 @Slf4j
@@ -85,14 +87,6 @@ public class ApiExceptionController extends ResponseEntityExceptionHandler {
         filesNotFound.add(Link.of("/index.html#_회원_조회_실패").withRel("profile"));
 
         return new ResponseEntity<>(filesNotFound , HttpStatus.NOT_FOUND);
-    }
-
-    //로그인 정보가 일치하지 않을 떄
-    @ExceptionHandler
-    public ResponseEntity loginInfoNotMatchedHandler(LoginInfoNotMatchedException exception , WebRequest request) {
-        EntityModel loginInfoNotMatched = commonNotFoundHandler("LoginInfoNotMatchedException", exception, request);
-
-        return new ResponseEntity<>(loginInfoNotMatched,HttpStatus.BAD_REQUEST);
     }
 
 
@@ -156,8 +150,8 @@ public class ApiExceptionController extends ResponseEntityExceptionHandler {
         String profileLink = getProfileLink(ex.getBindingResult().getObjectName());
 
         return new ResponseEntity(EntityModel.of(body)
-                .add(Link.of("http://www.localhost:8080").withRel("main-page"))
-                .add(Link.of(profileLink).withRel("profile"))
+                .add(linkTo(HomeController.class).withRel(MAIN_PAGE))
+                .add(Link.of(profileLink).withRel(PROFILE))
                 ,HttpStatus.BAD_REQUEST);
     }
 

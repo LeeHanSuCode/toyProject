@@ -1,0 +1,120 @@
+= Member API
+:toc:
+
+== 회원 가입
+
+=== CURL
+
+include::{snippets}/join-member/curl-request.adoc[]
+
+=== 요청 필드
+
+include::{snippets}/join-member/request-fields.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/join-member/response-fields.adoc[]
+
+=== 응답 링크
+
+include::{snippets}/join-member/links.adoc[]
+
+
+== 회원 가입(실패)
+
+=== CURL
+
+include::{snippets}/join-member-fail/curl-request.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/join-member-fail/response-fields.adoc[]
+
+=== 응답 링크
+
+include::{snippets}/join-member-fail/links.adoc[]
+
+
+
+
+== 회원 조회
+=== CURL
+
+include::{snippets}/find-member/curl-request.adoc[]
+
+=== path-parameter
+
+include::{snippets}/find-member/path-parameters.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/find-member/response-fields.adoc[]
+
+=== 응답 링크
+
+include::{snippets}/find-member/links.adoc[]
+
+== 회원 조회 실패
+
+=== 응답 필드
+
+include::{snippets}/find-member-fail/response-fields.adoc[]
+
+=== 응답 링크
+
+include::{snippets}/find-member-fail/links.adoc[]
+
+== 회원 수정
+=== CURL
+
+include::{snippets}/update-member/curl-request.adoc[]
+
+=== path-parameter
+
+include::{snippets}/update-member/path-parameters.adoc[]
+
+=== 요청 필드
+
+include::{snippets}/update-member/request-fields.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/update-member/response-fields.adoc[]
+
+=== 응답 링크
+
+include::{snippets}/update-member/links.adoc[]
+
+== 회원 수정(실패)
+=== CURL
+
+include::{snippets}/update-member-fail/curl-request.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/update-member-fail/response-fields.adoc[]
+
+=== 응답 링크
+
+include::{snippets}/update-member-fail/links.adoc[]
+
+
+== 회원 삭제
+
+=== CURL
+
+include::{snippets}/delete-member/curl-request.adoc[]
+
+=== path-parameter
+
+include::{snippets}/delete-member/path-parameters.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/delete-member/response-fields.adoc[]
+
+=== 응답 링크
+
+include::{snippets}/delete-member/links.adoc[]
+
+

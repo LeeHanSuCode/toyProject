@@ -8,9 +8,15 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
 public class Comment extends BaseEntity {
+
+    @Builder
+    public Comment(String writer , String content , Member member , Board board){
+        this.writer = writer;
+        this.content = content;
+        this.member = member;
+        this.board = board;
+    }
 
     @Id @GeneratedValue
     @Column(name = "COMMENT_ID")

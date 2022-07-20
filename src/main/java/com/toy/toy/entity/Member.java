@@ -2,6 +2,7 @@ package com.toy.toy.entity;
 
 import com.toy.toy.entity.mappedEntity.BaseEntity;
 import lombok.*;
+import org.springframework.web.bind.UnsatisfiedServletRequestParameterException;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -13,9 +14,20 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
+
 public class Member extends BaseEntity{
 
+    @Builder
+    public Member(Long id , String username , String userId , MemberGrade memberGrade , String password
+    ,String email , String tel){
+        this.id = id;
+        this.username = username;
+        this.userId = userId;
+        this.memberGrade = memberGrade;
+        this.password = password;
+        this.email = email;
+        this.tel = tel;
+    }
 
 
     @Id @GeneratedValue

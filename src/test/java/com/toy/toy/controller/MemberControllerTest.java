@@ -8,9 +8,7 @@ import com.toy.toy.entity.MemberGrade;
 import com.toy.toy.repository.MemberRepository;
 import com.toy.toy.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,10 +30,7 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.restdocs.request.RequestDocumentation;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -109,8 +104,8 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.email").value(joinMemberDto.getEmail()))
                 .andExpect(jsonPath("$.tel").value(joinMemberDto.getTel()))
                 .andExpect(jsonPath("$._links.self.href").exists())
-                .andExpect(jsonPath("$._links.update-member.href").exists())
-                .andExpect(jsonPath("$._links.delete-member.href").exists())
+                .andExpect(jsonPath("$._links.member-update.href").exists())
+                .andExpect(jsonPath("$._links.member-delete.href").exists())
                 .andDo(document("join-member",
                             requestFields(
                                     fieldWithPath("username").description("회원 이름"),
@@ -128,14 +123,14 @@ class MemberControllerTest {
                                 fieldWithPath("tel").description("휴대폰 번호"),
                                 fieldWithPath("username").description("회원 이름"),
                                 fieldWithPath("_links.self.href").description("my self 링크"),
-                                fieldWithPath("_links.update-member.href").description("회원 수정 링크"),
-                                fieldWithPath("_links.delete-member.href").description("회원 삭제 링크"),
+                                fieldWithPath("_links.member-update.href").description("회원 수정 링크"),
+                                fieldWithPath("_links.member-delete.href").description("회원 삭제 링크"),
                                 fieldWithPath("_links.profile.href").description("profile")
                         ),
                         links(
                             linkWithRel("self").description("link to self"),
-                            linkWithRel("update-member").description("회원 수정 링크"),
-                            linkWithRel("delete-member").description("회원 삭제 링크"),
+                            linkWithRel("member-update").description("회원 수정 링크"),
+                            linkWithRel("member-delete").description("회원 삭제 링크"),
                             linkWithRel("profile").description("link to profile")
 
                         )
@@ -300,8 +295,8 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.email").value(member.getEmail()))
                 .andExpect(jsonPath("$.tel").value(member.getTel()))
                 .andExpect(jsonPath("$._links.self").exists())
-                .andExpect(jsonPath("$._links.update-member").exists())
-                .andExpect(jsonPath("$._links.delete-member").exists())
+                .andExpect(jsonPath("$._links.member-update").exists())
+                .andExpect(jsonPath("$._links.member-delete").exists())
                 .andDo(document("find-member",
                         pathParameters(
                                 parameterWithName("id").description("회원 식별자")
@@ -313,14 +308,14 @@ class MemberControllerTest {
                                 fieldWithPath("tel").description("휴대폰 번호"),
                                 fieldWithPath("username").description("회원 이름"),
                                 fieldWithPath("_links.self.href").description("my self 링크"),
-                                fieldWithPath("_links.update-member.href").description("회원 수정 링크"),
-                                fieldWithPath("_links.delete-member.href").description("회원 삭제 링크"),
+                                fieldWithPath("_links.member-update.href").description("회원 수정 링크"),
+                                fieldWithPath("_links.member-delete.href").description("회원 삭제 링크"),
                                 fieldWithPath("_links.profile.href").description("profile")
                         ),
                         links(
                                 linkWithRel("self").description("link to self"),
-                                linkWithRel("update-member").description("회원 수정 링크"),
-                                linkWithRel("delete-member").description("회원 삭제 링크"),
+                                linkWithRel("member-update").description("회원 수정 링크"),
+                                linkWithRel("member-delete").description("회원 삭제 링크"),
                                 linkWithRel("profile").description("link to profile")
 
                         )
@@ -517,14 +512,12 @@ class MemberControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.greeting").value("Thank you for using it so far"))
                 .andExpect(jsonPath("$._links.main-page").exists())
                 .andDo(document("delete-member",
                             pathParameters(
                                     parameterWithName("id").description("회원 식별자")
                             ),
                             responseFields(
-                                    fieldWithPath("greeting").description("감사 인사"),
                                     fieldWithPath("_links.main-page.href").description("메인 페이지 링크"),
                                     fieldWithPath("_links.profile.href").description("profile")
                             ),

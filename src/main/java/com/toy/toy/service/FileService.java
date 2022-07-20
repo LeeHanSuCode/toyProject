@@ -8,6 +8,7 @@ import com.toy.toy.entity.Files;
 import com.toy.toy.repository.BoardRepository;
 import com.toy.toy.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,23 +24,30 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class FileService {
 
     private final FileRepository fileRepository;
-    private final BoardRepository boardRepository;
     private final FileTransfer fileTransfer;
-    private final EntityManager em;
 
     //파일 저장 -> 게시글에 의한 저장만 가능.
     @Transactional
-    public List<Files> save(List<Files> files){
-        List<Files> saveFiles = new ArrayList<>();
+    public List<Files> save(List<MultipartFile> filesList , Board board){
 
-         files.stream()
-                 .forEach(f -> saveFiles.add(fileRepository.save(f)));
+        if(filesList!= null && filesList.size() > 0) {
+            List<Files> changeFilesList = fileTransfer.changeFiles(filesList, board);
 
-        return saveFiles;
+            changeFilesList.stream()
+                    .forEach(f -> {
+                        fileRepository.save(f);
+                    });
+
+            return changeFilesList;
+        }
+
+        return Collections.emptyList();
     }
+
 
     //파일 조회
     public List<FilesResponse> getFiles(Board board){
@@ -57,25 +65,30 @@ public class FileService {
 
     //파일 수정
     @Transactional
-    public void update(Board board,UpdateBoardDto boardUpdateDto){
+    public void updatedByBoard(UpdateBoardDto updateBoardDto ,Board board){
 
         List<Files> findFiles = fileRepository.findByBoard(board);
 
-        if(findFiles.size() > 0){
-            if(boardUpdateDto.getAliveFiles().size() > 0){
+        if(findFiles!= null && findFiles.size() > 0){
+            //살아남은 파일이 없고 , 기존의 파일이 있는 경우 전부 삭제.
+            if(updateBoardDto.getAliveFiles() == null) {
+                findFiles.stream()
+                        .forEach(f -> fileRepository.delete(f));
+            }else {
+                //살아남은 파일이 있고 , 기존의 파일이 있는 경우 비교.
                 List<Long> existFilesId = findFiles.stream()
                         .map(f -> f.getId())
                         .collect(Collectors.toList());
 
-                List<Long> deleteFilesId = compareFiles(existFilesId, boardUpdateDto.getAliveFiles());
+                List<Long> deleteFilesId = compareFiles(existFilesId, updateBoardDto.getAliveFiles());
 
+                //비교된 결과를 가지고 삭제
                 if(deleteFilesId.size() > 0){
                     fileRepository.deleteByIdList(deleteFilesId);
                 }
             }
+            }
         }
-    }
-
 
 
     //살아남지 못한 파일 반환.

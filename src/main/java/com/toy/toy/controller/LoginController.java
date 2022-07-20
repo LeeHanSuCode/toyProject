@@ -1,66 +1,79 @@
 package com.toy.toy.controller;
 
-import com.toy.toy.StaticVariable;
-import com.toy.toy.argumentResolver.Login;
-import com.toy.toy.controller.exception_controller.exception.LoginInfoNotMatchedException;
-import com.toy.toy.controller.exception_controller.exception.MemberNotFoundException;
+
+import com.toy.toy.controller.exception_controller.exception.ValidationNotFieldMatchedException;
 import com.toy.toy.dto.LoginMemberDto;
+import com.toy.toy.dto.responseDto.LoginResponse;
 import com.toy.toy.entity.Member;
 import com.toy.toy.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMapping;
+
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.net.URI;
 import java.util.Optional;
 
 import static com.toy.toy.StaticVariable.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @Controller
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/login")
 public class LoginController {
 
     private final MemberRepository memberRepository;
 
-    /*@GetMapping
-    public ResponseEntity home(@Login LoginMemberDto loginMemberDto){
-        if(loginMemberDto == null){
-            return
+
+
+    @PostMapping ()
+    public ResponseEntity login(@RequestBody @Validated LoginMemberDto loginMemberDto , BindingResult bindingResult,
+                                HttpServletRequest request){
+
+        if(bindingResult.hasErrors()){
+            throw new ValidationNotFieldMatchedException(bindingResult);
         }
 
+        //아이디가 없는 경우
+        Optional<Member> optionalFindMember = memberRepository.findByUserId(loginMemberDto.getUserId());
 
-    }
+        if(!optionalFindMember.isPresent()){
+            bindingResult.rejectValue("userId" , "NotExist" , "존재하지 않는 회원 입니다.");
+        }
 
-*/
+        Member findMember = optionalFindMember.get();
 
-    @PostMapping ("/login")
-    public ResponseEntity login(@RequestBody LoginMemberDto loginMemberDto , HttpServletRequest request){
-        log.info("userId={}" , loginMemberDto.getUserId());
-
-        Member findMember = memberRepository.findByUserId(loginMemberDto.getUserId())
-                .orElseThrow(() -> new LoginInfoNotMatchedException("회원 정보가 일치하지 않습니다."));
-
+        //비밀번호가 일치하지 않는 경우
         if(!findMember.getPassword().equals(loginMemberDto.getPassword())){
-            throw new LoginInfoNotMatchedException("회원 정보가 일치하지 않습니다.");
+            bindingResult.rejectValue("password" , "NotEquals" , "비밀번호가 일치하지 않습니다.");
+            throw new ValidationNotFieldMatchedException(bindingResult);
         }
 
-        loginMemberDto.setId(findMember.getId());
+        //세션 생성
+        LoginResponse loginResponse = LoginResponse.builder()
+                .userId(findMember.getUserId())
+                .id(findMember.getId())
+                .build();
 
-        request.getSession().setAttribute(LOGIN_MEMBER,loginMemberDto);
+        request.getSession().setAttribute(LOGIN_MEMBER,loginResponse);
 
-        return ResponseEntity.ok().body(new CustomEntityModel()
-                .add(WebMvcLinkBuilder.linkTo(LoginController.class).withRel("main-page")));
+        return ResponseEntity.ok(
+                new RepresentationModel<>()
+                        .add(linkTo(HomeController.class).withRel("main-page"))
+                        .add(linkTo(BoardController.class).withRel("board-list"))
+                        .add(linkTo(MemberController.class).slash(findMember.getId()).withRel("member-info"))
+        );
     }
 
 
@@ -72,7 +85,7 @@ public class LoginController {
             session.invalidate();
         }
 
-        return ResponseEntity.ok().body(new CustomEntityModel()
-                .add(WebMvcLinkBuilder.linkTo(LoginController.class).withRel("main-page")));
+        return ResponseEntity.ok().body(new RepresentationModel<>()
+                .add(linkTo(HomeController.class).withRel("main-page")));
     }
 }

@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -60,9 +61,9 @@ public class MemberController {
        return ResponseEntity.created(locationBuilder.toUri()).body(
                EntityModel.of(changeMemberResponse(joinMember))
                .add(locationBuilder.withSelfRel())
-               .add(locationBuilder.withRel("update-member"))
-               .add(locationBuilder.withRel("delete-member"))
-                       .add(Link.of("/docs/index.html#_회원_가입").withRel("profile"))
+               .add(locationBuilder.withRel(MEMBER_UPDATE))
+               .add(locationBuilder.withRel(MEMBER_DELETE))
+                       .add(Link.of("/docs/index.html#_회원_가입").withRel(PROFILE))
        );
 
     }
@@ -79,9 +80,9 @@ public class MemberController {
         return ResponseEntity.ok().body(
                 EntityModel.of(changeMemberResponse(findMember))
                 .add(linkBuilder.withSelfRel())
-                .add(linkBuilder.withRel("update-member"))
-                .add(linkBuilder.withRel("delete-member"))
-                        .add(Link.of("/docs/index.html#_회원_조회").withRel("profile"))
+                .add(linkBuilder.withRel(MEMBER_UPDATE))
+                .add(linkBuilder.withRel(MEMBER_DELETE))
+                        .add(Link.of("/docs/index.html#_회원_조회").withRel(PROFILE))
         );
     }
 
@@ -108,9 +109,9 @@ public class MemberController {
 
         return ResponseEntity.ok().body(
                 EntityModel.of(changeMemberResponse(findMember))
-                .add(linkBuilder.withRel("member-info"))
-                        .add(Link.of("/docs/index.html#_회원_수정").withRel("profile"))
-                        .add(Link.of(MAIN_PAGE).withRel("main-page"))
+                .add(linkBuilder.withRel(MEMBER_INFO))
+                        .add(Link.of("/docs/index.html#_회원_수정").withRel(PROFILE))
+                        .add(linkTo(HomeController.class).withRel(MAIN_PAGE))
         );
     }
 
@@ -119,17 +120,12 @@ public class MemberController {
     @DeleteMapping("/{id}")
     public ResponseEntity delete(@PathVariable Long id){
 
-
         memberService.delete(id);
 
-        Map<String ,String> greeting = new HashMap<>();
-        greeting.put("greeting" , "Thank you for using it so far");
-
-
         return ResponseEntity.ok()
-                .body(EntityModel.of(greeting)
-                        .add(Link.of("/docs/index.html#_회원_삭제").withRel("profile"))
-                        .add(Link.of(MAIN_PAGE).withRel("main-page")));
+                .body(new RepresentationModel<>()
+                        .add(Link.of("/docs/index.html#_회원_삭제").withRel(PROFILE))
+                        .add(linkTo(HomeController.class).withRel(MAIN_PAGE)));
     }
 
 

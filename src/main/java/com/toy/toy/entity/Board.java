@@ -12,9 +12,16 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
 public class Board extends BaseEntity {
+
+    @Builder
+    public Board(String subject , String content , Integer readCount , Member member){
+        this.subject = subject;
+        this.content  =content;
+        this.readCount = readCount;
+        this.member = member;
+    }
+
 
     @Id @GeneratedValue
     @Column(name = "BOARD_ID")
@@ -45,8 +52,15 @@ public class Board extends BaseEntity {
     }
 
     //게시글 수정
-    public void changeContent(String content){
-        this.content = content;
+    public void updateBoard(String content , String subject){
+        if(content != null && !content.isBlank()){
+            this.content = content;
+        }
+
+        if(subject != null && !subject.isBlank()){
+            this.subject = subject;
+        }
+
     }
 
 }
