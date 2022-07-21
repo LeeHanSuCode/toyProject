@@ -2,7 +2,7 @@ package com.toy.toy.controller;
 
 
 import com.toy.toy.controller.exception_controller.exception.ValidationNotFieldMatchedException;
-import com.toy.toy.dto.LoginMemberDto;
+import com.toy.toy.dto.validationDto.LoginMemberDto;
 import com.toy.toy.dto.responseDto.LoginResponse;
 import com.toy.toy.entity.Member;
 import com.toy.toy.repository.MemberRepository;

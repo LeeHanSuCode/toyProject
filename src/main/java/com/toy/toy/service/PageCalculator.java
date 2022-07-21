@@ -26,9 +26,6 @@ public class PageCalculator {
 
         calculate();
         isExist_NextOrPrevious();
-        log.info("isNext={}" , this.isNext);
-        log.info("isPrevious={}" , this.isPrevious);
-        log.info("totalPage={}" ,totalPage );
     }
 
 

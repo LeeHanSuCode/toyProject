@@ -19,7 +19,7 @@ public class BoardResponse {
     public BoardResponse(Board board , Member member){
         this.boardId = board.getId();
         this.subject = board.getSubject();
-        this.writer = member.getUsername();
+        this.writer = member.getUserId();
         this.boardContent = board.getContent();
         this.readCount = board.getReadCount();
 

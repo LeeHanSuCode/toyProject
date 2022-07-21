@@ -1,9 +1,7 @@
 package com.toy.toy.argumentResolver;
 
 import com.toy.toy.StaticVariable;
-import com.toy.toy.dto.LoginMemberDto;
 import com.toy.toy.dto.responseDto.LoginResponse;
-import com.toy.toy.entity.Member;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -20,14 +18,14 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        log.info("supportsParameter 실행");
 
+        log.info("supportsParameter 실행");
         //1.Login어노테이션을 파라미터가 가지고 있는가?
-        //2.파라미터의 타입이 Member가 맞는가?
+        //2.파라미터의 타입이 LoginResponse인가?
 
         boolean hasLoginAnnotation = parameter.hasParameterAnnotation(Login.class);
-        boolean hasMemberType = LoginResponse.class.isAssignableFrom(parameter.getParameterType());
-        return hasLoginAnnotation && hasMemberType;
+        boolean hasType = LoginResponse.class.isAssignableFrom(parameter.getParameterType());
+        return hasLoginAnnotation && hasType;
     }
 
     @Override

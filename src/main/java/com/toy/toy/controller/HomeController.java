@@ -1,8 +1,6 @@
 package com.toy.toy.controller;
 
-import com.toy.toy.StaticVariable;
 import com.toy.toy.argumentResolver.Login;
-import com.toy.toy.dto.LoginMemberDto;
 import com.toy.toy.dto.responseDto.LoginResponse;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.ResponseEntity;

@@ -15,7 +15,7 @@ import java.util.List;
 public class Board extends BaseEntity {
 
     @Builder
-    public Board(String subject , String content , Integer readCount , Member member){
+    public Board(String subject , String content ,Integer readCount , Member member){
         this.subject = subject;
         this.content  =content;
         this.readCount = readCount;

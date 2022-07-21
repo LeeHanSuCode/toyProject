@@ -1,15 +1,12 @@
 package com.toy.toy.controller;
 
-import com.toy.toy.StaticVariable;
 import com.toy.toy.argumentResolver.Login;
 import com.toy.toy.controller.exception_controller.exception.ValidationNotFieldMatchedException;
-import com.toy.toy.dto.LoginMemberDto;
 import com.toy.toy.dto.responseDto.CommentResponse;
 import com.toy.toy.dto.responseDto.LoginResponse;
 import com.toy.toy.entity.Comment;
 import com.toy.toy.service.CommentService;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.connector.Response;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;

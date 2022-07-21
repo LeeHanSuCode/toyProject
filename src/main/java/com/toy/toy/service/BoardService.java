@@ -3,6 +3,8 @@ package com.toy.toy.service;
 
 
 import com.toy.toy.controller.exception_controller.exception.BoardNotFoundException;
+import com.toy.toy.controller.exception_controller.exception.MemberNotFoundException;
+import com.toy.toy.dto.SearchConditionDto;
 import com.toy.toy.dto.validationDto.UpdateBoardDto;
 import com.toy.toy.entity.Board;
 import com.toy.toy.entity.Files;
@@ -31,6 +33,7 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
+    private final MemberRepository memberRepository;
     private final FileRepository fileRepository;
     private final FileService fileService;
 
@@ -52,8 +55,9 @@ public class BoardService {
 
 
     //게시글 목록 보기
-    public Page<Board> findAll(Pageable pageable){
-        return boardRepository.findAllWithMember(pageable);
+    public Page<Board> findAll(SearchConditionDto searchConditionDto, Pageable pageable){
+
+        return boardRepository.findByCond(pageable,searchConditionDto);
     }
 
 

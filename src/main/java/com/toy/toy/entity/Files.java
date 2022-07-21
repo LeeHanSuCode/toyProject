@@ -2,6 +2,7 @@ package com.toy.toy.entity;
 
 import com.toy.toy.entity.mappedEntity.BaseEntity;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import java.util.Objects;
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 public class Files extends BaseEntity {
 
+    @Builder
     public Files(String uploadFilename , String serverFilename , Board board){
         this.uploadFilename = uploadFilename;
         this.serverFilename = serverFilename;

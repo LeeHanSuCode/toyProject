@@ -3,9 +3,8 @@ package com.toy.toy.controller;
 import com.toy.toy.StaticVariable;
 import com.toy.toy.argumentResolver.Login;
 import com.toy.toy.controller.exception_controller.exception.ValidationNotFieldMatchedException;
-import com.toy.toy.dto.LoginMemberDto;
+import com.toy.toy.dto.SearchConditionDto;
 import com.toy.toy.dto.responseDto.BoardResponse;
-import com.toy.toy.dto.responseDto.FilesResponse;
 import com.toy.toy.dto.responseDto.LoginResponse;
 import com.toy.toy.dto.responseDto.PageAndObjectResponse;
 import com.toy.toy.dto.validationDto.UpdateBoardDto;
@@ -20,9 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -30,9 +27,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.PostConstruct;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -66,15 +61,17 @@ public class BoardController {
 
     //게시글 목록
     @GetMapping
-    public ResponseEntity findBoards(@PageableDefault(sort = "id",direction = Sort.Direction.DESC) Pageable pageable){
+    public ResponseEntity findBoards(@RequestBody SearchConditionDto searchConditionDto,
+            @PageableDefault(sort = "id",direction = Sort.Direction.DESC) Pageable pageable){
 
-        Page<Board> pageBoard = boardService.findAll(pageable);
+
+        Page<Board> pageBoard = boardService.findAll(searchConditionDto,pageable);
 
         //게시글 정보
         List<EntityModel<BoardResponse>> collect = pageBoard.getContent()
                 .stream().map(
                         b -> EntityModel.of(new BoardResponse(b, b.getMember()))
-                                .add(linkTo(BoardController.class).slash(b.getId()).withRel("board-info"))
+                                .add(linkTo(BoardController.class).slash(b.getId()).withRel(BOARD_INFO))
                 ).collect(Collectors.toList());
 
         //페이지 정보

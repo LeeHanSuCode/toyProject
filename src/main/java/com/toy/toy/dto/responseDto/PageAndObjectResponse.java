@@ -1,5 +1,6 @@
 package com.toy.toy.dto.responseDto;
 
+import com.toy.toy.StaticVariable;
 import com.toy.toy.service.PageCalculator;
 import lombok.Getter;
 import org.springframework.hateoas.EntityModel;
@@ -9,6 +10,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.toy.toy.StaticVariable.*;
 
 
 @Getter
@@ -35,7 +38,7 @@ public class PageAndObjectResponse<T> {
             page.put("pageNum" , i+1);
             pageInfo.add(
                     EntityModel.of(page)
-                            .add(Link.of("http://www.localhost:8080?page=" + i).withRel("pageLink"))
+                            .add(Link.of("http://www.localhost:8080?page=" + i).withRel(PAGE_LINK))
             );
         }
 
@@ -48,7 +51,7 @@ public class PageAndObjectResponse<T> {
             pageInfo.add(
                     EntityModel.of(page)
                             .add(Link.of("http://www.localhost:8080?page=" + (startPageNum - pageSize -1))
-                                    .withRel("previousPage Link")));
+                                    .withRel(PREVIOUS_PAGE_LINK)));
         }
 
         //다음 페이지 링크
@@ -59,7 +62,7 @@ public class PageAndObjectResponse<T> {
             pageInfo.add(
                     EntityModel.of(page)
                             .add(Link.of("http://www.localhost:8080?page=" + (startPageNum + pageSize -1))
-                                    .withRel("nextPage Link")));
+                                    .withRel(NEXT_PAGE_LINK)));
         }
 
 

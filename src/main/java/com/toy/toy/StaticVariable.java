@@ -16,6 +16,11 @@ public interface StaticVariable {
      String BOARD_UPDATE = "board-update";
      String BOARD_DELETE = "board-delete";
      String BOARD_LIST = "board-list";
+     String BOARD_LIST_MEMBER = "board-list-member";
+
+     String PAGE_LINK = "page-link";
+     String PREVIOUS_PAGE_LINK = "previousPage-link";
+     String NEXT_PAGE_LINK = "nextPage-link";
 
 
 

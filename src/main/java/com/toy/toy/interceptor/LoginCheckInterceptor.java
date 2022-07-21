@@ -24,8 +24,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
     private String httpMethodMembers = POST.toString();
     private List<String> acceptOperation = List.of("/boards","/comments","/files");
 
-    //httpmethod중에 해당 패턴들은 안됨
-    //그중 get이면 board시리즈 가능 , post면 member join만 가능
+
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {

@@ -1,8 +1,7 @@
 package com.toy.toy.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.toy.toy.StaticVariable;
-import com.toy.toy.dto.LoginMemberDto;
+import com.toy.toy.dto.validationDto.LoginMemberDto;
 import com.toy.toy.dto.responseDto.LoginResponse;
 import com.toy.toy.entity.Member;
 import com.toy.toy.entity.MemberGrade;
@@ -17,22 +16,13 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.MediaTypes;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import static com.toy.toy.StaticVariable.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
