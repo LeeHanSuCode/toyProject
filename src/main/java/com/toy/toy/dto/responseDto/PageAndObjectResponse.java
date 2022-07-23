@@ -5,6 +5,7 @@ import com.toy.toy.service.PageCalculator;
 import lombok.Getter;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,11 +18,11 @@ import static com.toy.toy.StaticVariable.*;
 @Getter
 public class PageAndObjectResponse<T> {
     private T content;
-    private List<EntityModel> pageInfo;
+    private Map<Object,RepresentationModel> pageInfo;
 
     public PageAndObjectResponse(T content , PageCalculator pageCalculator) {
         this.content = content;
-        pageInfo = new ArrayList<>();
+        pageInfo = new HashMap<>();
         getEntityModelPageResponse(pageCalculator);
     }
 
@@ -34,33 +35,28 @@ public class PageAndObjectResponse<T> {
         int pageSize = pageCalculator.getPageSize();
 
         for(int i=startPageNum-1 ; i<endPageNum ; i++){
-            Map<String,Integer> page = new HashMap<>();
-            page.put("pageNum" , i+1);
-            pageInfo.add(
+            pageInfo.put(1 ,new RepresentationModel<>()
+                    .add(Link.of("http://www.localhost:8080?page=" + i).withRel(PAGE_LINK)));
+
+        /*    pageInfo.add(
                     EntityModel.of(page)
                             .add(Link.of("http://www.localhost:8080?page=" + i).withRel(PAGE_LINK))
-            );
+            );*/
         }
 
 
         //이전 페이지 링크
         if(pageCalculator.isPrevious()){
-            Map<String,Integer> page = new HashMap<>();
-            page.put("previousPageNum" , startPageNum-pageSize);
-
-            pageInfo.add(
-                    EntityModel.of(page)
+            pageInfo.put("previousPageNum",
+                    new RepresentationModel()
                             .add(Link.of("http://www.localhost:8080?page=" + (startPageNum - pageSize -1))
                                     .withRel(PREVIOUS_PAGE_LINK)));
         }
 
         //다음 페이지 링크
         if(pageCalculator.isNext()){
-            Map<String,Integer> page = new HashMap<>();
-            page.put("nextPageNum" , startPageNum+pageSize);
-
-            pageInfo.add(
-                    EntityModel.of(page)
+            pageInfo.put("previousPageNum",
+                    new RepresentationModel()
                             .add(Link.of("http://www.localhost:8080?page=" + (startPageNum + pageSize -1))
                                     .withRel(NEXT_PAGE_LINK)));
         }

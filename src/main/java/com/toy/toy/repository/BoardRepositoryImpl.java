@@ -24,6 +24,7 @@ import static com.toy.toy.entity.QMember.member;
 
 @RequiredArgsConstructor
 @Slf4j
+
 public class BoardRepositoryImpl implements BoardRepositoryCustom{
 
     private final JPAQueryFactory jpaQueryFactory;

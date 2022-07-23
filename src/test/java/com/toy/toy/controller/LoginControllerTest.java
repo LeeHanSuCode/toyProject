@@ -263,10 +263,12 @@ class LoginControllerTest {
                 .andExpect(jsonPath("$._links.main-page.href").exists())
                 .andDo(document("logout" ,
                             responseFields(
-                                    fieldWithPath("_links.main-page.href").description("메인 페이지 릴ㅇ크")
+                                    fieldWithPath("_links.main-page.href").description("메인 페이지 링크"),
+                                    fieldWithPath("_links.profile.href").description("profile")
                             ),
                         links(
-                                linkWithRel(MAIN_PAGE).description("메인 페이지 링크")
+                                linkWithRel(MAIN_PAGE).description("link to mainPage"),
+                                linkWithRel(PROFILE).description("link to profile")
                         )
                         ))
         ;

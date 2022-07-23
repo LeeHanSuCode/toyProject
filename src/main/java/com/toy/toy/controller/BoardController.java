@@ -20,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -79,7 +80,9 @@ public class BoardController {
 
         PageAndObjectResponse<List> listPageResponse = new PageAndObjectResponse<>(collect ,pageCalculator);
 
-        return ResponseEntity.ok().body(listPageResponse);
+        return ResponseEntity.ok()
+                .headers(encodingHeaders())
+                .body(listPageResponse);
     }
 
     //게시글 보기
@@ -102,7 +105,9 @@ public class BoardController {
                     .add(webMvcLinkBuilder.withRel(BOARD_DELETE));
         }
 
-        return ResponseEntity.ok().body(entityModel);
+        return ResponseEntity.ok()
+
+                .body(entityModel);
     }
 
     @PostMapping("/test")
@@ -186,6 +191,14 @@ public class BoardController {
 
     private WebMvcLinkBuilder getWebMvcLinkBuilder(Board board){
         return linkTo(BoardController.class).slash(board.getId());
+    }
+
+    //응답 헤더 지정
+    private HttpHeaders encodingHeaders(){
+        HttpHeaders resHeaders = new HttpHeaders();
+        resHeaders.add("Content-Type", "application/json;charset=UTF-8");
+
+        return resHeaders;
     }
 
 }

@@ -15,13 +15,17 @@ import com.toy.toy.repository.FileRepository;
 import com.toy.toy.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -36,17 +40,24 @@ import java.util.List;
 import static com.toy.toy.StaticVariable.*;
 import static com.toy.toy.entity.MemberGrade.*;
 import static org.springframework.hateoas.MediaTypes.*;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureRestDocs(uriScheme = "https",uriHost = "api.bpard.com" , uriPort = 443)
+@ExtendWith(RestDocumentationExtension.class)
 @Transactional
 @Slf4j
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class BoardControllerTest {
 
 
@@ -72,10 +83,11 @@ class BoardControllerTest {
     //파일 : 240개 (게시글당 2개씩)
 
     int memberCount = 10;
-    int boardCount = 12;
-    int fileCount = 2;
+    int boardCount = 11;
+    int fileCount = 1;
 
     @BeforeEach
+    @DisplayName("게시글 목록 조회시 필요한 데이터 셋팅")
     void beforeSet_findBoardListData(){
 
 
@@ -117,6 +129,7 @@ class BoardControllerTest {
 
 
     @BeforeEach
+    @DisplayName("게시글 목록 조회시 필요한 session셋팅")
     void beforeSet_SessionDataArrangement(){
 
         Member member = Member.builder()
@@ -145,26 +158,28 @@ class BoardControllerTest {
     //쿼리 파라미터도 필요없음(page, size , sort)
     //SearchCoditionDto 필요없음
     //그냥 Get요청만 날리면 됨됨
-   @Test
+    @Test
     @DisplayName("게시글 목록 가져오기 성공 - 기본값으로 넘겨줄때")
-    void findBoardList_noCondition() throws Exception{
+    void findBoardList_noCondition_success() throws Exception{
         //given
        SearchConditionDto searchCond = SearchConditionDto.builder()
                .build();
-
+       
        //expected
        mockMvc.perform(get("/boards")
+                       .characterEncoding(StandardCharsets.UTF_8)
                        .accept(HAL_JSON)
                        .content(objectMapper.writeValueAsString(searchCond))
                        .contentType(MediaType.APPLICATION_JSON)
        )
                .andDo(print())
                .andExpect(status().isOk())
-               .andExpect(jsonPath("$.content.length()").value(10))
+              /* .andExpect(jsonPath("$.content.length()").value(10))
                .andExpect(jsonPath("$.content[0].boardId").exists())
                .andExpect(jsonPath("$.content[0].subject").exists())
                .andExpect(jsonPath("$.content[0].writer").exists())
                .andExpect(jsonPath("$.content[0].readCount").exists())
+               .andExpect(jsonPath("$.content[0].boardContent").exists())
                .andExpect(jsonPath("$.content[0].filesDtoList.length()").value(fileCount))
                .andExpect(jsonPath("$.content[0].filesDtoList[0].id").exists())
                .andExpect(jsonPath("$.content[0].filesDtoList[0].uploadFilename").exists())
@@ -173,9 +188,40 @@ class BoardControllerTest {
                .andExpect(jsonPath("$.pageInfo.length()").value(11))
                .andExpect(jsonPath("$.pageInfo[0].links[0].href").exists())
                .andExpect(jsonPath("$.pageInfo[0].pageNum").value(1))
-               .andExpect(jsonPath("$.pageInfo[10].nextPageNum").value(11))
+               .andExpect(jsonPath("$.pageInfo[10].nextPageNum").value("다음"))
+
+               .andDo(document("find-boardList-noCondition-success",
+                       requestFields(
+                               fieldWithPath("userId").description("회원 아이디"),
+                               fieldWithPath("subject").description("게시글 제목")
+                       ),
+                       responseFields(
+                               fieldWithPath("content[].boardId").description("게시글 식별자 아이디"),
+                               fieldWithPath("content[].subject").description("게시글 제목"),
+                               fieldWithPath("content[].writer").description("게시글 작성자"),
+                               fieldWithPath("content[].readCount").description("조회수"),
+                               fieldWithPath("content[].boardContent").description("게시글 내용"),
+                               fieldWithPath("content[].filesDtoList[]").description("게시글 파일 목록"),
+                               fieldWithPath("content[].filesDtoList[].id").description("파일 식별자 아이디"),
+                               fieldWithPath("content[].filesDtoList[].uploadFilename").description("파일 이름"),
+                               fieldWithPath("content[].links[].href").description("해당 게시글 보기 링크"),
+                               fieldWithPath("content[].links[].rel").description("해당 게시글 보기 링크 제목"),
+                               fieldWithPath("pageInfo[].links[].href").description("페이지 번호 링크"),
+                               fieldWithPath("pageInfo[].links[].rel").description("해당 페이지 링크 이름"),
+                               fieldWithPath("pageInfo[].pageNum").description("페이지 번호").optional(),
+                               fieldWithPath("pageInfo[].nextPageNum").description("다음 페이지").optional()
+                       ),
+                       links(
+                               linkWithRel(BOARD_INFO).description("게시글 상세 보기"),
+                               linkWithRel(PAGE_LINK).description("해당 페이지 링크"),
+                               linkWithRel(NEXT_PAGE_LINK).description("다음 페이지 링크").optional(),
+                               linkWithRel(PREVIOUS_PAGE_LINK).description("이전 페이지 링크").optional()
+                       )
+
+               ))*/
        ;
     }
+/*
 
     @Test
     @DisplayName("게시글 목록 가져오기 성공 - subject를 포함하는 게시글을 가져올 때")
@@ -334,6 +380,7 @@ class BoardControllerTest {
 
         ;
     }
+*/
 
 /*
     @Test
