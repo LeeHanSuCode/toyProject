@@ -70,7 +70,7 @@ public class ApiExceptionController extends ResponseEntityExceptionHandler {
     @ExceptionHandler
     public ResponseEntity memberNotFoundHandler(MemberNotFoundException exception , WebRequest request){
         EntityModel memberNotFound = commonNotFoundHandler("MemberNotFound", exception, request);
-        memberNotFound.add(Link.of("/index.html#_회원_조회_실패").withRel("profile"));
+        memberNotFound.add(Link.of("/docs/index.html#_회원_조회_실패").withRel("profile"));
 
         return new ResponseEntity<>(memberNotFound,HttpStatus.NOT_FOUND);
     }
@@ -80,7 +80,7 @@ public class ApiExceptionController extends ResponseEntityExceptionHandler {
     public ResponseEntity boardNotFoundHandler(BoardNotFoundException exception ,  WebRequest request){
 
         EntityModel boardNotFound = commonNotFoundHandler("BoardNotFound", exception, request);
-        boardNotFound.add(Link.of("/index.html#_회원_조회_실패").withRel("profile"));
+        boardNotFound.add(Link.of("/docs/index.html#_회원_조회_실패").withRel("profile"));
 
         return new ResponseEntity<>(boardNotFound, HttpStatus.NOT_FOUND);
     }
@@ -90,7 +90,7 @@ public class ApiExceptionController extends ResponseEntityExceptionHandler {
     public ResponseEntity commentNotFoundHandler(CommentNotFoundException exception ,  WebRequest request){
 
         EntityModel commentsNotFound = commonNotFoundHandler("CommentsNotFound", exception, request);
-        commentsNotFound.add(Link.of("/index.html#_회원_조회_실패").withRel("profile"));
+        commentsNotFound.add(Link.of("/docs/index.html#_회원_조회_실패").withRel("profile"));
 
         return new ResponseEntity<>(commentsNotFound , HttpStatus.NOT_FOUND);
     }
@@ -100,7 +100,7 @@ public class ApiExceptionController extends ResponseEntityExceptionHandler {
     public ResponseEntity filesNotFoundHandler(FilesNotFoundException exception ,  WebRequest request){
 
         EntityModel filesNotFound = commonNotFoundHandler("FilesNotFound", exception, request);
-        filesNotFound.add(Link.of("/index.html#_회원_조회_실패").withRel("profile"));
+        filesNotFound.add(Link.of("/docs/index.html#_회원_조회_실패").withRel("profile"));
 
         return new ResponseEntity<>(filesNotFound , HttpStatus.NOT_FOUND);
     }

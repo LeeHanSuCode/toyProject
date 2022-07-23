@@ -50,13 +50,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@AutoConfigureRestDocs(uriScheme = "https",uriHost = "api.bpard.com" , uriPort = 443)
+@AutoConfigureRestDocs(uriScheme = "https",uriHost = "api.boards.com" , uriPort = 443)
 @ExtendWith(RestDocumentationExtension.class)
 @Transactional
+@Rollback(value = false)
 @Slf4j
 class BoardControllerTest {
 
@@ -167,14 +169,13 @@ class BoardControllerTest {
        
        //expected
        mockMvc.perform(get("/boards")
-                       .characterEncoding(StandardCharsets.UTF_8)
                        .accept(HAL_JSON)
                        .content(objectMapper.writeValueAsString(searchCond))
                        .contentType(MediaType.APPLICATION_JSON)
        )
                .andDo(print())
                .andExpect(status().isOk())
-              /* .andExpect(jsonPath("$.content.length()").value(10))
+               .andExpect(jsonPath("$.content.length()").value(10))
                .andExpect(jsonPath("$.content[0].boardId").exists())
                .andExpect(jsonPath("$.content[0].subject").exists())
                .andExpect(jsonPath("$.content[0].writer").exists())
@@ -188,9 +189,7 @@ class BoardControllerTest {
                .andExpect(jsonPath("$.pageInfo.length()").value(11))
                .andExpect(jsonPath("$.pageInfo[0].links[0].href").exists())
                .andExpect(jsonPath("$.pageInfo[0].pageNum").value(1))
-               .andExpect(jsonPath("$.pageInfo[10].nextPageNum").value("다음"))
-
-               .andDo(document("find-boardList-noCondition-success",
+               .andDo(document("find-boardList-success",
                        requestFields(
                                fieldWithPath("userId").description("회원 아이디"),
                                fieldWithPath("subject").description("게시글 제목")
@@ -205,20 +204,12 @@ class BoardControllerTest {
                                fieldWithPath("content[].filesDtoList[].id").description("파일 식별자 아이디"),
                                fieldWithPath("content[].filesDtoList[].uploadFilename").description("파일 이름"),
                                fieldWithPath("content[].links[].href").description("해당 게시글 보기 링크"),
-                               fieldWithPath("content[].links[].rel").description("해당 게시글 보기 링크 제목"),
+                               fieldWithPath("content[].links[].rel").description("해당 게시글 보기 withRel").ignored(),
+                               fieldWithPath("pageInfo[].pageNum").description("페이지 번호"),
                                fieldWithPath("pageInfo[].links[].href").description("페이지 번호 링크"),
-                               fieldWithPath("pageInfo[].links[].rel").description("해당 페이지 링크 이름"),
-                               fieldWithPath("pageInfo[].pageNum").description("페이지 번호").optional(),
-                               fieldWithPath("pageInfo[].nextPageNum").description("다음 페이지").optional()
-                       ),
-                       links(
-                               linkWithRel(BOARD_INFO).description("게시글 상세 보기"),
-                               linkWithRel(PAGE_LINK).description("해당 페이지 링크"),
-                               linkWithRel(NEXT_PAGE_LINK).description("다음 페이지 링크").optional(),
-                               linkWithRel(PREVIOUS_PAGE_LINK).description("이전 페이지 링크").optional()
+                               fieldWithPath("pageInfo[].links[].rel").description("페이지 번호 링크 withRel").ignored()
                        )
-
-               ))*/
+               ))
        ;
     }
 /*

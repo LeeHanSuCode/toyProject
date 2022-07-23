@@ -362,7 +362,7 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.path").value("uri=/members/100"))
                 .andExpect(jsonPath("$.message").value("존재하지 않는 회원입니다."))
                 .andExpect(jsonPath("$._links.main-page.href").value("http://www.localhost:8080"))
-                .andDo(document( "find-member-fail",
+                .andDo(document( "find-resource-fail-notExist",
                         pathParameters(
                                 parameterWithName("id").description("회원 식별자")
                         ),

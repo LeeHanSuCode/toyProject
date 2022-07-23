@@ -1,6 +1,7 @@
 package com.toy.toy.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.toy.toy.entity.mappedEntity.BaseEntity;
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
@@ -33,15 +34,16 @@ public class Board extends BaseEntity {
 
     private Integer readCount;
 
-
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
-
+    @JsonIgnore
     @OneToMany(mappedBy = "board")
     private List<Comment> comments = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "board")
     private List<Files> files = new ArrayList<>();
 

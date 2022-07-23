@@ -72,13 +72,14 @@ public class BoardController {
         List<EntityModel<BoardResponse>> collect = pageBoard.getContent()
                 .stream().map(
                         b -> EntityModel.of(new BoardResponse(b, b.getMember()))
-                                .add(linkTo(BoardController.class).slash(b.getId()).withRel(BOARD_INFO))
+                                .add(linkTo(BoardController.class).slash(b.getId()).withSelfRel())
                 ).collect(Collectors.toList());
 
         //페이지 정보
         PageCalculator pageCalculator = new PageCalculator(10, pageBoard.getTotalPages(), pageBoard.getNumber() + 1);
 
         PageAndObjectResponse<List> listPageResponse = new PageAndObjectResponse<>(collect ,pageCalculator);
+
 
         return ResponseEntity.ok()
                 .headers(encodingHeaders())
