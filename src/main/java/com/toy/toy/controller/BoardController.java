@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -127,10 +128,11 @@ public class BoardController {
 
 
     //게시글 등록.
-    @PostMapping()
+    @PostMapping(produces = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity register(@Login LoginResponse loginResponse
+            , @RequestPart(value = "writeBoardDto") @Validated WriteBoardDto writeBoardDto
             , @RequestPart(value = "filesList" , required = false) List<MultipartFile> filesList
-            , @RequestPart @Validated WriteBoardDto writeBoardDto , BindingResult bindingResult){
+            , BindingResult bindingResult){
 
 
         //validation
@@ -146,9 +148,11 @@ public class BoardController {
         WebMvcLinkBuilder location = getWebMvcLinkBuilder(registerBoard);
 
         return ResponseEntity.created(location.toUri())
+                .headers(encodingHeaders())
                 .body(EntityModel.of( new BoardResponse(registerBoard,  findMember))
                         .add(location.withRel(BOARD_UPDATE))
-                        .add(location.withRel(BOARD_DELETE)));
+                        .add(location.withRel(BOARD_DELETE))
+                        .add(location.withSelfRel()));
     }
 
 
@@ -197,7 +201,7 @@ public class BoardController {
     //응답 헤더 지정
     private HttpHeaders encodingHeaders(){
         HttpHeaders resHeaders = new HttpHeaders();
-        resHeaders.add("Content-Type", "application/json;charset=UTF-8");
+        resHeaders.add("Content-Type", "application/hal+json;charset=UTF-8");
 
         return resHeaders;
     }

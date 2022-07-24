@@ -24,7 +24,6 @@ public class WriteBoardDto {
     @NotBlank
     private String boardContent;
 
-    List<MultipartFile> filesList;
 
     public Board changeEntity(Member member) {
        return Board.builder()

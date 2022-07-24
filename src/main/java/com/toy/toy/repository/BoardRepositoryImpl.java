@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,7 +33,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom{
     @Override
     public Page<Board> findByCond(Pageable pageable, SearchConditionDto searchConditionDto) {
 
-        OrderSpecifier orderBys = getAllOrderSpecifiers(pageable);
+        List<OrderSpecifier> allOrderSpecifiers = getAllOrderSpecifiers(pageable);
 
 
         List<Board> content = jpaQueryFactory
@@ -43,7 +44,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom{
                         subjectCond(searchConditionDto.getSubject())
                 ).offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(orderBys)
+                .orderBy(allOrderSpecifiers.stream().toArray(OrderSpecifier[]::new))
                 .fetch();
 
 
@@ -70,8 +71,9 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom{
     }
 
     //정렬 조건 검증 및 반환(정렬 조건으로는 날짜와 조회 순으로만 처리하고 , 그 밖의 정렬 조건일 경우
-    private OrderSpecifier getAllOrderSpecifiers(Pageable pageable){
-        OrderSpecifier orderBys= null;
+    private List<OrderSpecifier> getAllOrderSpecifiers(Pageable pageable){
+
+        List<OrderSpecifier> orderBys= new ArrayList<>();
 
 
 
@@ -82,27 +84,19 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom{
             Order direction = sortOrder.get(0).getDirection().isAscending() ? Order.ASC : Order.DESC;
 
 
-            switch (sortOrder.get(0).getProperty()){
-                case "createdDate":
-                    OrderSpecifier<?> orderByCreatedDate = QueryDslOrderUtilCustom.getSortedColumn(direction , board,"createdDate");
-                    orderBys = orderByCreatedDate;
-                    break;
-
-                case "readCount":
-                    OrderSpecifier<?> orderBySubject = QueryDslOrderUtilCustom.getSortedColumn(direction , board,"readCount");
-                    orderBys = orderBySubject;
-                    break;
-
-                case "id":
-                    OrderSpecifier<?> orderById = QueryDslOrderUtilCustom.getSortedColumn(direction , board,"id");
-                    orderBys = orderById;
-                    break;
-
-                default:
-                    OrderSpecifier<?> defaultOrderBy = QueryDslOrderUtilCustom.getSortedColumn(Order.DESC , board,"id");
-                    orderBys = defaultOrderBy;
-                    break;
+            if(sortOrder.get(0).getProperty().equals("createdDate")){
+                OrderSpecifier<?> orderByCreatedDate = QueryDslOrderUtilCustom.getSortedColumn(direction , board,"createdDate");
+                orderBys.add(orderByCreatedDate);
             }
+
+            if(sortOrder.get(0).getProperty().equals("readCount")){
+                OrderSpecifier<?> orderByReadCount = QueryDslOrderUtilCustom.getSortedColumn(direction , board,"readCount");
+                orderBys.add(orderByReadCount);
+            }
+
+
+            OrderSpecifier<?> orderById = QueryDslOrderUtilCustom.getSortedColumn(Order.DESC , board,"id");
+            orderBys.add(orderById);
 
         }
 

@@ -3,6 +3,7 @@ package com.toy.toy.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.toy.toy.StaticVariable;
 import com.toy.toy.dto.SearchConditionDto;
+import com.toy.toy.dto.responseDto.LoginResponse;
 import com.toy.toy.dto.validationDto.LoginMemberDto;
 import com.toy.toy.dto.validationDto.WriteBoardDto;
 import com.toy.toy.entity.Board;
@@ -21,13 +22,16 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,21 +48,17 @@ import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.li
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs(uriScheme = "https",uriHost = "api.boards.com" , uriPort = 443)
 @ExtendWith(RestDocumentationExtension.class)
 @Transactional
-@Rollback(value = false)
 @Slf4j
 class BoardControllerTest {
 
@@ -66,7 +66,7 @@ class BoardControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
-    private MockHttpServletRequest mockHttpServletRequest;
+    private MockHttpSession mockHttpSession;
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -88,10 +88,13 @@ class BoardControllerTest {
     int boardCount = 11;
     int fileCount = 1;
 
+    int count = 1;
+
     @BeforeEach
     @DisplayName("게시글 목록 조회시 필요한 데이터 셋팅")
     void beforeSet_findBoardListData(){
 
+        log.info("count={}" , count);
 
         for(int i=0 ; i<memberCount; i++){
             Member member = Member.builder()
@@ -145,14 +148,15 @@ class BoardControllerTest {
 
         Member findMember = memberRepository.save(member);
 
-        HttpSession session = mockHttpServletRequest.getSession();
 
-        LoginMemberDto loginMemberDto = LoginMemberDto.builder()
+
+        LoginResponse loginResponse = LoginResponse.builder()
+                .id(findMember.getId())
                 .userId(findMember.getUserId())
                 .build();
 
 
-        session.setAttribute(LOGIN_MEMBER , loginMemberDto);
+        mockHttpSession.setAttribute(LOGIN_MEMBER , loginResponse);
 
     }
 
@@ -212,7 +216,7 @@ class BoardControllerTest {
                ))
        ;
     }
-/*
+
 
     @Test
     @DisplayName("게시글 목록 가져오기 성공 - subject를 포함하는 게시글을 가져올 때")
@@ -231,9 +235,22 @@ class BoardControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(10))
+                .andExpect(jsonPath("$.content[0].boardId").exists())
+                .andExpect(jsonPath("$.content[0].subject").exists())
+                .andExpect(jsonPath("$.content[0].writer").exists())
+                .andExpect(jsonPath("$.content[0].readCount").exists())
+                .andExpect(jsonPath("$.content[0].boardContent").exists())
+                .andExpect(jsonPath("$.content[0].filesDtoList.length()").value(fileCount))
+                .andExpect(jsonPath("$.content[0].filesDtoList[0].id").exists())
+                .andExpect(jsonPath("$.content[0].filesDtoList[0].uploadFilename").exists())
+                .andExpect(jsonPath("$.content[0].filesDtoList[0].uploadFilename").exists())
+                .andExpect(jsonPath("$.content[0].links.length()").value(1))
                 .andExpect(jsonPath("$.pageInfo.length()").value(1))
+                .andExpect(jsonPath("$.pageInfo[0].links[0].href").exists())
+                .andExpect(jsonPath("$.pageInfo[0].pageNum").value(1))
         ;
     }
+
 
 
     @Test
@@ -253,10 +270,23 @@ class BoardControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(10))
+                .andExpect(jsonPath("$.content[0].boardId").exists())
+                .andExpect(jsonPath("$.content[0].subject").exists())
+                .andExpect(jsonPath("$.content[0].writer").exists())
+                .andExpect(jsonPath("$.content[0].readCount").exists())
+                .andExpect(jsonPath("$.content[0].boardContent").exists())
+                .andExpect(jsonPath("$.content[0].filesDtoList.length()").value(fileCount))
+                .andExpect(jsonPath("$.content[0].filesDtoList[0].id").exists())
+                .andExpect(jsonPath("$.content[0].filesDtoList[0].uploadFilename").exists())
+                .andExpect(jsonPath("$.content[0].filesDtoList[0].uploadFilename").exists())
+                .andExpect(jsonPath("$.content[0].links.length()").value(1))
                 .andExpect(jsonPath("$.pageInfo.length()").value(2))
+                .andExpect(jsonPath("$.pageInfo[0].links[0].href").exists())
+                .andExpect(jsonPath("$.pageInfo[0].pageNum").value(1))
         ;
     }
 
+/*
     @Test
     @DisplayName("게시글 목록 가져오기 성공 - 정렬 조건을 날짜로 줄 때")
     void findBoardList_orderByCondition_createdDate() throws Exception{
@@ -273,10 +303,17 @@ class BoardControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(10))
+                .andExpect(jsonPath("$.content[0].boardId").value(229))
+                .andExpect(jsonPath("$.content[0].subject").value("hslee0009제목10"))
                 .andExpect(jsonPath("$.content[0].writer").value("hslee0009"))
-                .andExpect(jsonPath("$.content[0].subject").value("hslee0009제목11"))
+                .andExpect(jsonPath("$.content[0].readCount").value(10))
+                .andExpect(jsonPath("$.content[0].boardContent").value("hslee0009내용10"))
+                .andExpect(jsonPath("$.content[0].filesDtoList[0].length()").value(2))
+                .andExpect(jsonPath("$.content[0].links[0].length()").value(2))
+                .andExpect(jsonPath("$.pageInfo.length()").value(11))
+
         ;
-    }
+    }*/
 
 
     @Test
@@ -295,7 +332,14 @@ class BoardControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(10))
+                .andExpect(jsonPath("$.content[0].boardId").value(209))
+                .andExpect(jsonPath("$.content[0].subject").value("hslee0009제목0"))
+                .andExpect(jsonPath("$.content[0].writer").value("hslee0009"))
                 .andExpect(jsonPath("$.content[0].readCount").value(0))
+                .andExpect(jsonPath("$.content[0].boardContent").value("hslee0009내용0"))
+                .andExpect(jsonPath("$.content[0].filesDtoList[0].length()").value(2))
+                .andExpect(jsonPath("$.content[0].links[0].length()").value(2))
+                .andExpect(jsonPath("$.pageInfo.length()").value(11))
         ;
     }
 
@@ -305,45 +349,72 @@ class BoardControllerTest {
     @DisplayName("게시글 등록 성공 - 파일까지 함께 저장.")
     void registerBoardWithFileSave_success() throws Exception{
         //given
-        String path = "C:\\Users\\USER\\Desktop\\20220630_222944.png";
+        String path = "C:\\Users\\USER\\fileUpload\\20220630_222944.png";
 
-        FileInputStream fileInputStream1 = new FileInputStream(path);
-        FileInputStream fileInputStream2 = new FileInputStream(path);
 
         MockMultipartFile filesList1 = new MockMultipartFile(
-                "filesList", "20220630_222944.png", MediaType.IMAGE_PNG_VALUE, fileInputStream1);
+                "filesList", "20220630_222944.png", "image/png",  new FileInputStream(path));
 
         MockMultipartFile filesList2 = new MockMultipartFile(
-                "filesList", "20220630_222944.png", MediaType.IMAGE_PNG_VALUE, fileInputStream2);
+                "filesList", "20220630_222944.png", "image/png", new FileInputStream(path));
 
-        WriteBoardDto writeBoardDto = WriteBoardDto.builder()
+        WriteBoardDto createdWriteBoardDto = WriteBoardDto.builder()
                 .subject("제목입니다.")
                 .boardContent("내용입니다.")
                 .build();
 
-
-        String jsonWriteBoardDto = objectMapper.writeValueAsString(writeBoardDto);
-        MockMultipartFile multipartWriteBoardDto = new MockMultipartFile("writeBoardDto","writeBoardDto",MediaType.APPLICATION_JSON_VALUE, jsonWriteBoardDto.getBytes(StandardCharsets.UTF_8));
+        String writeBoardDtoString = objectMapper.writeValueAsString(createdWriteBoardDto);
+        MockMultipartFile writeBoardDto = new MockMultipartFile("writeBoardDto","writeBoardDto",MediaType.APPLICATION_JSON_VALUE, writeBoardDtoString.getBytes(StandardCharsets.UTF_8));
 
         //expected
         mockMvc.perform(multipart("/boards")
                 .file("filesList",filesList1.getBytes())
                 .file("filesList",filesList2.getBytes())
-                                .file(multipartWriteBoardDto)
+                                .file(writeBoardDto)
+                                .session(mockHttpSession)
+                                .contentType(MediaType.MULTIPART_FORM_DATA)
                 )
                 .andDo(print())
                 .andExpect(status().isCreated())
+                .andExpect(header().exists(HttpHeaders.LOCATION))
                 .andExpect(jsonPath("$.boardId").exists())
+                .andExpect(jsonPath("$.subject").value("제목입니다."))
                 .andExpect(jsonPath("$.writer").exists())
+                .andExpect(jsonPath("$.boardContent").value("내용입니다."))
                 .andExpect(jsonPath("$.readCount").value(0))
-                .andExpect(jsonPath("$.boardContent").value(writeBoardDto.getBoardContent()))
-                .andExpect(jsonPath("$.subject").value(writeBoardDto.getSubject()))
                 .andExpect(jsonPath("$.filesDtoList.length()").value(2))
+                .andExpect(jsonPath("$.filesDtoList[0].id").exists())
+                .andExpect(jsonPath("$.filesDtoList[0].uploadFilename").exists())
                 .andExpect(jsonPath("$._links.board-update.href").exists())
                 .andExpect(jsonPath("$._links.board-delete.href").exists())
+
+                .andDo(document("find-board-success" ,
+                        requestParts(
+                                partWithName("filesList").description("첨부 이미지"),
+                                partWithName("writeBoardDto").description("제목과 내용")
+                        ),
+                        responseFields(
+                                fieldWithPath("boardId").description("게시글 식별자"),
+                                fieldWithPath("subject").description("게시글 제목"),
+                                fieldWithPath("writer").description("게시글 작성자"),
+                                fieldWithPath("boardContent").description("게시글 내용"),
+                                fieldWithPath("readCount").description("게시글 조회수"),
+                                fieldWithPath("filesDtoList[].id").description("파일 식별자"),
+                                fieldWithPath("filesDtoList[].uploadFilename").description("파일 이름"),
+                                fieldWithPath("_links.board-update.href").description("게시글 수정 링크"),
+                                fieldWithPath("_links.board-delete.href").description("게시글 삭제 링크"),
+                                fieldWithPath("_links.self.href").description("self")
+                        ),
+                        links(
+                                linkWithRel("board-update").description("게시글 수정 링크"),
+                                linkWithRel("board-delete").description("게시글 삭제 링크"),
+                                linkWithRel("self").description("link to self")
+                        )
+                        ))
+
                 ;
     }
-
+    /*
     @Test
     @DisplayName("게시글 등록 실패 - Beanvalidation위반")
     void registerBoard_fail_byBeanValidation() throws Exception {
@@ -398,4 +469,6 @@ class BoardControllerTest {
 
         ;
     }*/
+
+
 }
