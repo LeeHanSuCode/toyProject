@@ -11,7 +11,8 @@ import javax.persistence.*;
 public class Comment extends BaseEntity {
 
     @Builder
-    public Comment(String writer , String content , Member member , Board board){
+    public Comment(Long id ,String writer , String content , Member member , Board board){
+        this.id = id;
         this.writer = writer;
         this.content = content;
         this.member = member;

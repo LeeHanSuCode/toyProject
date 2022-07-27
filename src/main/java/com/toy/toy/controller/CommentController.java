@@ -4,9 +4,14 @@ import com.toy.toy.argumentResolver.Login;
 import com.toy.toy.controller.exception_controller.exception.ValidationNotFieldMatchedException;
 import com.toy.toy.dto.responseDto.CommentResponse;
 import com.toy.toy.dto.responseDto.LoginResponse;
+import com.toy.toy.dto.responseDto.PageAndObjectResponse;
 import com.toy.toy.entity.Comment;
 import com.toy.toy.service.CommentService;
+import com.toy.toy.service.PageCalculator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -14,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.toy.toy.StaticVariable.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -25,12 +32,25 @@ public class CommentController {
 
     private final CommentService commentService;
 
-/*
     @GetMapping("/{boardId}")
-    public ResponseEntity getCommentList(@PathVariable Long boardId){
+    public ResponseEntity getCommentList(@Login LoginResponse loginResponse , @PathVariable Long boardId,
+                                        @PageableDefault Pageable pageable){
+        Page<CommentResponse> pageComments = commentService.findAll(boardId, pageable)
+                .map(c -> CommentResponse.builder()
+                        .commentId(c.getId())
+                        .memberId(loginResponse.getId())
+                        .boardId(boardId)
+                        .content(c.getContent())
+                        .content(c.getWriter())
+                        .build());
 
+        List<CommentResponse> content = pageComments.getContent();
+        PageCalculator pageCalculator = new PageCalculator(10 ,pageComments.getTotalPages() , pageComments.getNumber()+1);
+        PageAndObjectResponse<List> listPageResponse = new PageAndObjectResponse<>(content ,pageCalculator);
+
+
+        return ResponseEntity.ok(listPageResponse);
     }
-*/
 
 
     //댓글 등록

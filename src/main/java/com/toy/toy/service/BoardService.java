@@ -33,7 +33,6 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
-    private final MemberRepository memberRepository;
     private final FileRepository fileRepository;
     private final FileService fileService;
 
@@ -85,11 +84,10 @@ public class BoardService {
         //파일 내용 및 제목 수정.
        findBoard.updateBoard(boardUpdateDto.getBoardContent() , boardUpdateDto.getSubject());
 
-       //새로운 파일 저장
-        fileService.save(newFiles , findBoard);
+
 
         //파일 변경 내역 확인 후 삭제
-       fileService.updatedByBoard(boardUpdateDto , findBoard);
+       fileService.updatedByBoard(boardUpdateDto , findBoard , newFiles);
 
         return findBoard;
     }

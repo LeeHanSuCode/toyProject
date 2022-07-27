@@ -16,11 +16,14 @@ import java.util.Objects;
 public class Files extends BaseEntity {
 
     @Builder
-    public Files(String uploadFilename , String serverFilename , Board board){
+    public Files(Long id , String uploadFilename , String serverFilename , Board board){
+        this.id = id;
         this.uploadFilename = uploadFilename;
         this.serverFilename = serverFilename;
         addBoardToFile(board);
     }
+
+
 
     @Id @GeneratedValue
     @Column(name = "FILES_ID")

@@ -8,6 +8,8 @@ import com.toy.toy.repository.BoardRepository;
 import com.toy.toy.repository.CommentRepository;
 import com.toy.toy.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,13 +42,13 @@ public class CommentService {
     }
 
 
-  /*  //게시글당 댓글 조회 (이건 어차피 비동기 통신으로 처리)
+    //게시글당 댓글 조회 (이건 어차피 비동기 통신으로 처리)
     @Transactional(readOnly = true)
     public Page<Comment> findAll(Long boardId , Pageable pageable) {
         Page<Comment> findByBoard = commentRepository.findByBoardId(boardId, pageable);
 
         return findByBoard;
-    }*/
+    }
 
 
     //댓글 수정

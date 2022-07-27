@@ -22,4 +22,5 @@ public class BaseEntity {
 
     @LastModifiedDate
     protected LocalDateTime updatedDate;
+
 }

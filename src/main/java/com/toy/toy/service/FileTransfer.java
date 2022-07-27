@@ -1,6 +1,7 @@
 package com.toy.toy.service;
 import com.toy.toy.entity.Board;
 import com.toy.toy.entity.Files;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -50,7 +51,12 @@ public class FileTransfer {
             throw new IllegalStateException();
         }
 
-        return new Files(originalFilename, storeFilename , board);
+        return Files.builder()
+                .uploadFilename(originalFilename)
+                .serverFilename(storeFilename)
+                .board(board)
+                .build();
+
     }
 
     //서버에 저장할 파일명 생성

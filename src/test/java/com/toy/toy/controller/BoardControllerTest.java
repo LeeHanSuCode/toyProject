@@ -28,6 +28,9 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.hypermedia.HypermediaDocumentation;
+import org.springframework.restdocs.hypermedia.LinkDescriptor;
+import org.springframework.restdocs.hypermedia.LinksSnippet;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
@@ -44,11 +47,11 @@ import java.util.List;
 import static com.toy.toy.StaticVariable.*;
 import static com.toy.toy.entity.MemberGrade.*;
 import static org.springframework.hateoas.MediaTypes.*;
-import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
-import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -60,6 +63,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(RestDocumentationExtension.class)
 @Transactional
 @Slf4j
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class BoardControllerTest {
 
 
@@ -90,9 +94,17 @@ class BoardControllerTest {
 
     int count = 1;
 
+    public static LinksSnippet links(LinkDescriptor... descriptors){
+        return HypermediaDocumentation.links(linkWithRel("self").ignored().optional()
+                );
+    }
+
     @BeforeEach
     @DisplayName("게시글 목록 조회시 필요한 데이터 셋팅")
     void beforeSet_findBoardListData(){
+        fileRepository.deleteAll();
+        boardRepository.deleteAll();
+        memberRepository.deleteAll();
 
         log.info("count={}" , count);
 
@@ -165,14 +177,14 @@ class BoardControllerTest {
     //SearchCoditionDto 필요없음
     //그냥 Get요청만 날리면 됨됨
     @Test
-    @DisplayName("게시글 목록 가져오기 성공 - 기본값으로 넘겨줄때")
+    @DisplayName("게시글 목록 가져오기 성공")
     void findBoardList_noCondition_success() throws Exception{
         //given
        SearchConditionDto searchCond = SearchConditionDto.builder()
                .build();
        
        //expected
-       mockMvc.perform(get("/boards")
+       mockMvc.perform(get("/boards?page=0&size=10&sort=id,desc ")
                        .accept(HAL_JSON)
                        .content(objectMapper.writeValueAsString(searchCond))
                        .contentType(MediaType.APPLICATION_JSON)
@@ -194,6 +206,11 @@ class BoardControllerTest {
                .andExpect(jsonPath("$.pageInfo[0].links[0].href").exists())
                .andExpect(jsonPath("$.pageInfo[0].pageNum").value(1))
                .andDo(document("find-boardList-success",
+                       requestParameters(
+                         parameterWithName("page").description("페이지 번호"),
+                          parameterWithName("size").description("가져올 글의 갯수"),
+                               parameterWithName("sort").description("정렬 조건")
+                       ),
                        requestFields(
                                fieldWithPath("userId").description("회원 아이디"),
                                fieldWithPath("subject").description("게시글 제목")
@@ -286,7 +303,6 @@ class BoardControllerTest {
         ;
     }
 
-/*
     @Test
     @DisplayName("게시글 목록 가져오기 성공 - 정렬 조건을 날짜로 줄 때")
     void findBoardList_orderByCondition_createdDate() throws Exception{
@@ -313,7 +329,7 @@ class BoardControllerTest {
                 .andExpect(jsonPath("$.pageInfo.length()").value(11))
 
         ;
-    }*/
+    }
 
 
     @Test
@@ -345,7 +361,7 @@ class BoardControllerTest {
 
 
 
-    @Test
+/*    @Test
     @DisplayName("게시글 등록 성공 - 파일까지 함께 저장.")
     void registerBoardWithFileSave_success() throws Exception{
         //given
@@ -391,7 +407,7 @@ class BoardControllerTest {
                 .andDo(document("find-board-success" ,
                         requestParts(
                                 partWithName("filesList").description("첨부 이미지"),
-                                partWithName("writeBoardDto").description("제목과 내용")
+                                partWithName("writeBoardDto").description("제목과 내용").ignored()
                         ),
                         responseFields(
                                 fieldWithPath("boardId").description("게시글 식별자"),
@@ -413,7 +429,7 @@ class BoardControllerTest {
                         ))
 
                 ;
-    }
+    }*/
     /*
     @Test
     @DisplayName("게시글 등록 실패 - Beanvalidation위반")

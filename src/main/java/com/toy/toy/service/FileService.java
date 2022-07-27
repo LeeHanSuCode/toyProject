@@ -65,13 +65,13 @@ public class FileService {
 
     //파일 수정
     @Transactional
-    public void updatedByBoard(UpdateBoardDto updateBoardDto ,Board board){
+    public void updatedByBoard(UpdateBoardDto updateBoardDto ,Board board ,  List<MultipartFile> newFiles){
 
         List<Files> findFiles = fileRepository.findByBoard(board);
 
         if(findFiles!= null && findFiles.size() > 0){
             //살아남은 파일이 없고 , 기존의 파일이 있는 경우 전부 삭제.
-            if(updateBoardDto.getAliveFiles() == null) {
+            if(updateBoardDto.getAliveFiles() == null || updateBoardDto.getAliveFiles().size() == 0) {
                 findFiles.stream()
                         .forEach(f -> fileRepository.delete(f));
             }else {
@@ -88,6 +88,9 @@ public class FileService {
                 }
             }
             }
+
+        //새로운 파일 저장
+        save(newFiles , board);
         }
 
 
