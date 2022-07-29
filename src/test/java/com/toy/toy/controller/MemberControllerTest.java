@@ -1,6 +1,7 @@
 package com.toy.toy.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.toy.toy.ControllerTestAnnotation;
 import com.toy.toy.StaticVariable;
 import com.toy.toy.dto.responseDto.LoginResponse;
 import com.toy.toy.dto.validationDto.JoinMemberDto;
@@ -46,11 +47,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+
 @AutoConfigureRestDocs(uriScheme = "https",uriHost = "api.member.com" , uriPort = 443)
-@ExtendWith(RestDocumentationExtension.class)
-@Transactional
+@ControllerTestAnnotation
 @Slf4j
 class MemberControllerTest {
 

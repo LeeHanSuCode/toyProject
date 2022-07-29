@@ -157,6 +157,10 @@ include::{snippets}/delete-member/links.adoc[]
 
 include::{snippets}/find-boardList-success/curl-request.adoc[]
 
+==== 요청 파라미터
+
+include::{snippets}/find-boardList-success/request-parameters.adoc[]
+
 ==== 요청 필드
 
 include::{snippets}/find-boardList-success/request-fields.adoc[]
@@ -164,3 +168,15 @@ include::{snippets}/find-boardList-success/request-fields.adoc[]
 ==== 응답 필드
 
 include::{snippets}/find-boardList-success/response-fields.adoc[]
+
+=== 게시글 단건 조회
+
+==== CURL
+
+==== 요청 데이터
+
+include::{snippets}/find-board-success/request-parts.adoc[]
+
+==== 응답 필드
+
+include::{snippets}/find-board-success/response-fields.adoc[]

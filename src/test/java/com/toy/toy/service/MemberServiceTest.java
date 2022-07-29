@@ -69,7 +69,6 @@ class MemberServiceTest {
         assertThat(joinMember.getMemberGrade()).isEqualTo(MemberGrade.NORMAL);
         assertThat(joinMember.getUserId()).isEqualTo(member.getUserId());
 
-        //verify
         verify(memberRepository,times(1)).save(member);
 
     }
@@ -91,7 +90,6 @@ class MemberServiceTest {
         assertThat(findMember.getUserId()).isEqualTo(member.getUserId());
         assertThat(findMember).isEqualTo(member);
 
-        //verify
         verify(memberRepository,times(1)).findById(member.getId());
 
     }

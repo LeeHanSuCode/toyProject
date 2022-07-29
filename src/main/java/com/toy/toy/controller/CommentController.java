@@ -32,6 +32,7 @@ public class CommentController {
 
     private final CommentService commentService;
 
+    //댓글 목록 가져오기
     @GetMapping("/{boardId}")
     public ResponseEntity getCommentList(@Login LoginResponse loginResponse , @PathVariable Long boardId,
                                         @PageableDefault Pageable pageable){
