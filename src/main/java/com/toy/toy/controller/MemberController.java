@@ -15,6 +15,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -58,9 +59,18 @@ public class MemberController {
                .add(locationBuilder.withSelfRel())
                .add(locationBuilder.withRel(MEMBER_UPDATE))
                .add(locationBuilder.withRel(MEMBER_DELETE))
-                       .add(Link.of("/docs/index.html#_회원_가입").withRel(PROFILE))
+                       .add(Link.of("/docs/index.html#_회원_가입_성공").withRel(PROFILE))
+
        );
 
+    }
+
+    //응답 헤더 지정
+    private HttpHeaders encodingHeaders(){
+        HttpHeaders resHeaders = new HttpHeaders();
+        resHeaders.add("Content-Type", "application/hal+json;charset=UTF-8");
+
+        return resHeaders;
     }
 
 

@@ -59,7 +59,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-@AutoConfigureRestDocs(uriScheme = "https",uriHost = "api.boards.com" , uriPort = 445)
+@AutoConfigureRestDocs
 @ControllerTestAnnotation
 @Slf4j
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -301,6 +301,7 @@ class BoardControllerTest {
                 .andExpect(jsonPath("$.pageInfo[0].pageNum").value(1))
         ;
     }
+/*
 
     @Test
     @DisplayName("게시글 목록 가져오기 성공 - 정렬 조건을 날짜로 줄 때")
@@ -358,6 +359,7 @@ class BoardControllerTest {
         ;
     }
 
+*/
 
 
 /*    @Test

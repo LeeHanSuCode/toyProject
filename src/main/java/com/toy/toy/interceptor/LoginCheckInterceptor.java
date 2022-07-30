@@ -55,10 +55,10 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
         if(requestURI.contains("/members")){
             return this.httpMethodMembers.equals(requestMethod);
-        }else{
+        }else
             return this.httpMethodNotMembers.equals(requestMethod);
         }
 
-    }
+
 
 }

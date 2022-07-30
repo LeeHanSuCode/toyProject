@@ -163,18 +163,25 @@ public class ApiExceptionController extends ResponseEntityExceptionHandler {
 
         body.put("fieldErrors", filedErrorsInfo);
 
-        String profileLink = getProfileLink(ex.getBindingResult().getObjectName());
+       ;
 
-        return new ResponseEntity(EntityModel.of(body)
+        EntityModel<Map<String, Object>> model = EntityModel.of(body)
                 .add(linkTo(HomeController.class).withRel(MAIN_PAGE))
-                .add(Link.of(profileLink).withRel(PROFILE))
-                ,HttpStatus.BAD_REQUEST);
+                .add(Link.of("/docs/index.html").withRel(PROFILE));
+
+        return new ResponseEntity(model,encodingHeaders(),HttpStatus.BAD_REQUEST);
     }
 
 
+    //응답 헤더 지정
+    private HttpHeaders encodingHeaders(){
+        HttpHeaders resHeaders = new HttpHeaders();
+        resHeaders.add("Content-Type", "application/hal+json;charset=UTF-8");
 
+        return resHeaders;
+    }
 
-    private String getProfileLink(String objectName){
+   /* private String getProfileLink(String objectName){
 
         if(objectName.equals("joinMemberDto")){
             return "/docs/index.html#_회원_가입실패";
@@ -185,7 +192,7 @@ public class ApiExceptionController extends ResponseEntityExceptionHandler {
         }
 
         return null;
-    }
+    }*/
 
 
 

@@ -1,6 +1,7 @@
 package com.toy.toy.service;
 
 import com.toy.toy.controller.exception_controller.exception.CommentNotFoundException;
+import com.toy.toy.dto.responseDto.CommentResponse;
 import com.toy.toy.entity.Board;
 import com.toy.toy.entity.Comment;
 import com.toy.toy.entity.Member;
@@ -44,10 +45,17 @@ public class CommentService {
 
     //게시글당 댓글 조회 (이건 어차피 비동기 통신으로 처리)
     @Transactional(readOnly = true)
-    public Page<Comment> findAll(Long boardId , Pageable pageable) {
-        Page<Comment> findByBoard = commentRepository.findByBoardId(boardId, pageable);
+    public Page<CommentResponse> findAll(Long boardId , Pageable pageable) {
+        Page<CommentResponse> responses = commentRepository.findByBoardId(boardId, pageable)
+                .map(c -> CommentResponse.builder()
+                        .commentId(c.getId())
+                        .memberId(c.getMember().getId())
+                        .boardId(boardId)
+                        .content(c.getContent())
+                        .userId(c.getWriter())
+                        .build());
 
-        return findByBoard;
+        return responses;
     }
 
 

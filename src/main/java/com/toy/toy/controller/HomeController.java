@@ -15,6 +15,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 @RequestMapping("/")
 public class HomeController {
 
+
+
     @GetMapping
     public ResponseEntity<RepresentationModel> home(@Login LoginResponse loginResponse){
 
@@ -28,5 +30,6 @@ public class HomeController {
         index.add(linkTo(MemberController.class).slash(loginResponse.getId()).withRel("member-info"));
         return ResponseEntity.ok(index);
     }
+
 
 }

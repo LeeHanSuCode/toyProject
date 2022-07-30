@@ -1,5 +1,6 @@
 package com.toy.toy.service;
 
+import com.toy.toy.dto.responseDto.CommentResponse;
 import com.toy.toy.entity.Board;
 import com.toy.toy.entity.Comment;
 import com.toy.toy.entity.Member;
@@ -115,12 +116,12 @@ class CommentServiceTest {
         doReturn(pageComment).when(commentRepository).findByBoardId(boardId,pageable);
 
         //when
-        Page<Comment> page = commentService.findAll(boardId, pageable);
+        Page<CommentResponse> pageComments = commentService.findAll(boardId, pageable);
 
         //then
-        assertThat(page.getContent().get(0).getContent()).isEqualTo(comment.getContent());
-        assertThat(page.getContent().get(0).getId()).isEqualTo(comment.getId());
-        assertThat(page.getContent().get(0).getWriter()).isEqualTo(comment.getWriter());
+        assertThat(pageComments.getContent().get(0).getContent()).isEqualTo(comment.getContent());
+        assertThat(pageComments.getContent().get(0).getCommentId()).isEqualTo(comment.getId());
+        assertThat(pageComments.getContent().get(0).getUserId()).isEqualTo(comment.getWriter());
 
         verify(commentRepository , times(1)).findByBoardId(boardId,pageable);
     }
