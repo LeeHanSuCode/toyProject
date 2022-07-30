@@ -20,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -159,7 +160,7 @@ public class BoardController {
 
 
     //게시글 수정
-    @PatchMapping("/{id}")
+    @PostMapping("/update/{id}")
     public ResponseEntity updateBoard(@RequestPart(value = "newFiles" , required = false) List<MultipartFile> newFiles,
             @RequestPart @Validated UpdateBoardDto updateBoardDto , BindingResult bindingResult,
                                       @PathVariable Long id){
@@ -174,11 +175,12 @@ public class BoardController {
 
         WebMvcLinkBuilder webMvcLinkBuilder = getWebMvcLinkBuilder(updateBoard);
 
+        RepresentationModel representationModel = new RepresentationModel();
+        representationModel.add(webMvcLinkBuilder.withRel(BOARD_INFO))
+                .add(linkTo(BoardController.class).withRel(BOARD_LIST));
+
         return ResponseEntity.ok()
-                .body(EntityModel.of(updateBoard.getId())
-                        .add(webMvcLinkBuilder.withRel(BOARD_INFO))
-                        .add(linkTo(BoardController.class).withRel(BOARD_LIST))
-                );
+                .body(representationModel);
     }
 
     //게시글 삭제
@@ -187,10 +189,12 @@ public class BoardController {
 
         boardService.delete(id);
 
+        RepresentationModel representationModel = new RepresentationModel();
+        representationModel.add(linkTo(BoardController.class).withRel(BOARD_LIST))
+                .add(linkTo(HomeController.class).withRel(MAIN_PAGE));
         return ResponseEntity.ok()
-                .body(EntityModel.of(id)
-                        .add(linkTo(BoardController.class).withRel(BOARD_LIST))
-                        .add(linkTo(HomeController.class).withRel(MAIN_PAGE)));
+                .body(representationModel);
+
     }
 
 

@@ -216,7 +216,6 @@ class CommentControllerTest {
         Board board = saveBoardData(member);
         Long boardId= board.getId();
 
-        Pageable pageable = PageRequest.of(0,3 , Sort.by("id").descending());
 
         Comment comment1 = saveCommentData(member, board);
         Comment comment2 = saveCommentData(member, board);

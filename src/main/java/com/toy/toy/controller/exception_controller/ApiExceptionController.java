@@ -126,6 +126,12 @@ public class ApiExceptionController extends ResponseEntityExceptionHandler {
     }
 
 
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        return  handleValidationNotFieldMatchedException(new ValidationNotFieldMatchedException(ex.getBindingResult()),request);
+    }
+
+
 /*
     Bean Validation 유효성 검증 통과하지 못하였을 경우.
 */
