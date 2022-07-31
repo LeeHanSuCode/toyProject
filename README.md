@@ -17,4 +17,4 @@
   ## 사용 기술
   - Java , Junit5 , MockMvc
   - Spring Mvc , Spring Rest Docs , Spring Data Jpa , QueryDsl
-  - H2 , MySql
+  - H2
