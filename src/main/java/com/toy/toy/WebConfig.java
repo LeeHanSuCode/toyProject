@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
@@ -30,4 +31,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/","/login","/logout","/css/**" ,"/error" , "/admin/**","/docs/**");
     }
 
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/docs/**").addResourceLocations("classpath:/static/docs/");
+    }
 }

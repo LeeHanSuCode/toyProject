@@ -1,69 +1,7 @@
 = API
 :toc:
 
-== Login API
-
-=== 로그인 성공
-==== CURL
-include::{snippets}/login-success/curl-request.adoc[]
-==== 요청 필드
-include::{snippets}/login-success/request-fields.adoc[]
-==== 응답 링크
-include::{snippets}/login-success/links.adoc[]
-
-=== 로그인 실패
-
-==== CURL
-include::{snippets}/login-fail/curl-request.adoc[]
-==== 요청 필드
-include::{snippets}/login-fail/request-fields.adoc[]
-==== 응답 필드
-include::{snippets}/login-fail/response-fields.adoc[]
-==== 응답 링크
-include::{snippets}/login-fail/links.adoc[]
-
-=== 로그아웃
-==== 응답 링크
-include::{snippets}/logout/links.adoc[]
-
-
-== 존재하지 않는 리소스 조회(공통 API)
-
-==== 응답 필드
-
-include::{snippets}/find-resource-fail-notExist/response-fields.adoc[]
-
-==== 응답 링크
-
-include::{snippets}/find-resource-fail-notExist/links.adoc[]
-
-
-== Member API
-
-=== 회원 가입
-
-==== CURL
-
-include::{snippets}/join-member/curl-request.adoc[]
-
-==== 요청 필드
-
-include::{snippets}/join-member/request-fields.adoc[]
-
-==== 응답 필드
-
-include::{snippets}/join-member/response-fields.adoc[]
-
-==== 응답 링크
-
-include::{snippets}/join-member/links.adoc[]
-
-
-=== 회원 가입(실패)
-
-==== CURL
-
-include::{snippets}/join-member-fail/curl-request.adoc[]
+== 리소스 조회 실패 (공통 API)
 
 ==== 응답 필드
 
@@ -73,110 +11,165 @@ include::{snippets}/join-member-fail/response-fields.adoc[]
 
 include::{snippets}/join-member-fail/links.adoc[]
 
-
-
-
-=== 회원 조회
-==== CURL
-
-include::{snippets}/find-member/curl-request.adoc[]
-
-==== path-parameter
-
-include::{snippets}/find-member/path-parameters.adoc[]
+== validation 위반 (공통 API)
 
 ==== 응답 필드
-
-include::{snippets}/find-member/response-fields.adoc[]
-
+include::{snippets}/find-resource-fail-notExist/response-fields.adoc[]
 ==== 응답 링크
+include::{snippets}/find-resource-fail-notExist/links.adoc[]
 
+== Login API
+
+=== 로그인 성공
+
+==== CURL
+include::{snippets}/login-success/curl-request.adoc[]
+==== 요청 필드
+include::{snippets}/login-success/request-fields.adoc[]
+==== 응답 필드
+include::{snippets}/login-success/response-fields.adoc[]
+==== 링크
+include::{snippets}/login-success/links.adoc[]
+
+=== 로그인 실패
+==== CURL
+include::{snippets}/login-fail/curl-request.adoc[]
+==== 요청 필드
+include::{snippets}/login-fail/request-fields.adoc[]
+==== 응답 필드
+include::{snippets}/login-fail/response-fields.adoc[]
+==== 링크
+include::{snippets}/login-fail/links.adoc[]
+
+=== 로그 아웃
+==== CURL
+include::{snippets}/logout/curl-request.adoc[]
+==== 응답 필드
+include::{snippets}/logout/response-fields.adoc[]
+==== 링크
+include::{snippets}/logout/links.adoc[]
+
+== Member API
+
+=== 회원 가입
+==== CURL
+include::{snippets}/join-member/curl-request.adoc[]
+==== 요청 필드
+include::{snippets}/join-member/request-fields.adoc[]
+==== 응답 필드
+include::{snippets}/join-member/response-fields.adoc[]
+==== 링크
+include::{snippets}/join-member/links.adoc[]
+
+=== 회원 단건 조회
+==== CURL
+include::{snippets}/find-member/curl-request.adoc[]
+==== 요청 패스 파라미터
+include::{snippets}/find-member/path-parameters.adoc[]
+==== 응답 필드
+include::{snippets}/find-member/response-fields.adoc[]
+==== 링크
 include::{snippets}/find-member/links.adoc[]
-
-
 
 === 회원 수정
 ==== CURL
-
 include::{snippets}/update-member/curl-request.adoc[]
-
-==== path-parameter
-
+==== 요청 패스 파라미터
 include::{snippets}/update-member/path-parameters.adoc[]
-
 ==== 요청 필드
-
 include::{snippets}/update-member/request-fields.adoc[]
-
 ==== 응답 필드
-
 include::{snippets}/update-member/response-fields.adoc[]
-
-==== 응답 링크
-
+==== 링크
 include::{snippets}/update-member/links.adoc[]
 
-=== 회원 수정(실패)
-==== CURL
-
-include::{snippets}/update-member-fail/curl-request.adoc[]
-
-==== 응답 필드
-
-include::{snippets}/update-member-fail/response-fields.adoc[]
-
-==== 응답 링크
-
-include::{snippets}/update-member-fail/links.adoc[]
-
-
 === 회원 삭제
-
 ==== CURL
-
 include::{snippets}/delete-member/curl-request.adoc[]
-
-==== path-parameter
-
+==== 요청 패스 파라미터
 include::{snippets}/delete-member/path-parameters.adoc[]
-
 ==== 응답 필드
-
 include::{snippets}/delete-member/response-fields.adoc[]
-
-==== 응답 링크
-
+==== 링크
 include::{snippets}/delete-member/links.adoc[]
 
 
 == BOARD API
+=== 게시글 등록(파일 포함)
+
+==== RequestPart
+include::{snippets}/register-board-success/request-parts.adoc[]
+include::{snippets}/register-board-success/request-part-writeBoardDto-fields.adoc[]
+==== 응답 필드
+include::{snippets}/register-board-success/response-fields.adoc[]
 
 === 게시글 목록 조회
-
 ==== CURL
-
-include::{snippets}/find-boardList-success/curl-request.adoc[]
-
+include::{snippets}/find-boardList/curl-request.adoc[]
 ==== 요청 파라미터
-
-include::{snippets}/find-boardList-success/request-parameters.adoc[]
-
-==== 요청 필드
-
-include::{snippets}/find-boardList-success/request-fields.adoc[]
-
+include::{snippets}/find-boardList/request-parameters.adoc[]
 ==== 응답 필드
-
-include::{snippets}/find-boardList-success/response-fields.adoc[]
+include::{snippets}/find-boardList/response-fields.adoc[]
 
 === 게시글 단건 조회
-
 ==== CURL
-
-==== 요청 데이터
-
-include::{snippets}/find-board-success/request-parts.adoc[]
-
+include::{snippets}/find-board/curl-request.adoc[]
+==== 요청 패스 파라미터
+include::{snippets}/find-board/path-parameters.adoc[]
 ==== 응답 필드
+include::{snippets}/find-board/response-fields.adoc[]
 
-include::{snippets}/find-board-success/response-fields.adoc[]
+=== 게시글 수정
+
+==== 요청 패스 파라미터
+include::{snippets}/update-board/path-parameters.adoc[]
+==== RequestPart
+include::{snippets}/update-board/request-parts.adoc[]
+include::{snippets}/update-board/request-part-updateBoardDto-fields.adoc[]
+==== 링크
+include::{snippets}/update-board/links.adoc[]
+
+=== 게시글 삭제
+==== 요청 패스 파라미터
+include::{snippets}/delete-board/path-parameters.adoc[]
+==== 링크
+include::{snippets}/delete-board/links.adoc[]
+
+== Comments API
+=== 댓글 등록
+==== CURL
+include::{snippets}/register-comments/curl-request.adoc[]
+==== 요청 패스 파라미터
+include::{snippets}/register-comments/path-parameters.adoc[]
+==== 요청 필드
+include::{snippets}/register-comments/request-fields.adoc[]
+==== 응답 필드
+include::{snippets}/register-comments/response-fields.adoc[]
+==== 링크
+include::{snippets}/register-comments/links.adoc[]
+
+=== 댓글 수정
+==== CURL
+include::{snippets}/update-comment/curl-request.adoc[]
+==== 요청 필드
+include::{snippets}/update-comment/request-fields.adoc[]
+==== 응답 필드
+include::{snippets}/update-comment/response-fields.adoc[]
+
+=== 댓글 목록
+==== CURL
+include::{snippets}/find-commentsList/curl-request.adoc[]
+==== 요청 패스 파라미터
+include::{snippets}/find-commentsList/path-parameters.adoc[]
+==== 요청 파라미터
+include::{snippets}/find-commentsList/request-parameters.adoc[]
+==== 응답 필드
+include::{snippets}/find-commentsList/response-fields.adoc[]
+
+=== 댓글 삭제
+==== CURL
+include::{snippets}/delete-comment/curl-request.adoc[]
+==== 요청 패스 파라미터
+include::{snippets}/delete-comment/path-parameters.adoc[]
+==== 링크
+include::{snippets}/delete-comment/links.adoc[]

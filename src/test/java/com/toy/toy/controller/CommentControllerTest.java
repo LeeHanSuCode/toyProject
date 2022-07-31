@@ -52,8 +52,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ControllerTestAnnotation
 @AutoConfigureRestDocs
+@AutoConfigureMockMvc
+@SpringBootTest
+@ExtendWith(RestDocumentationExtension.class)
+@Transactional
 @Slf4j
 class CommentControllerTest {
 
@@ -161,16 +164,17 @@ class CommentControllerTest {
                                     fieldWithPath("content").description("댓글 내용"),
                                     fieldWithPath("_links.comments-list.href").description("댓글 목록 가져오기"),
                                     fieldWithPath("_links.comment-update.href").description("댓글 수정하기"),
-                                    fieldWithPath("_links.comment-delete.href").description("댓글 삭제하기")
+                                    fieldWithPath("_links.comment-delete.href").description("댓글 삭제하기"),
+                                    fieldWithPath("_links.profile.href").description("profile To Link")
                             ),
                         links(
                                 linkWithRel("comments-list").description("댓글 목록 가져오기"),
                                 linkWithRel("comment-update").description("댓글 수정하기"),
-                                linkWithRel("comment-delete").description("댓글 삭제하기")
+                                linkWithRel("comment-delete").description("댓글 삭제하기"),
+                                linkWithRel(PROFILE).description("profile To Link")
                         )
                         ))
         ;
-        //index페이지에 만들어주고 , profile설정
     }
 
 
@@ -260,7 +264,8 @@ class CommentControllerTest {
                                 fieldWithPath("content[].userId").description("댓글 작성자"),
                                 fieldWithPath("content[].content").description("댓글 본문"),
                                 fieldWithPath("pageInfo[].pageNum").description("페이지 번호"),
-                                subsectionWithPath("pageInfo[].links[]").description("해당 페이지 번호 링크")
+                                subsectionWithPath("pageInfo[].links[]").description("해당 페이지 번호 링크"),
+                                subsectionWithPath("representationModel.links[]").description(PROFILE)
                         )
                         ))
         ;
@@ -316,7 +321,8 @@ class CommentControllerTest {
                             fieldWithPath("boardId").description("게시글 식별자"),
                             fieldWithPath("userId").description("댓글 작성자"),
                             fieldWithPath("content").description("댓글 본문"),
-                                subsectionWithPath("_links").description("댓글 목록 이동 링크")
+                                fieldWithPath("_links.comments-list.href").description("댓글 목록 이동 링크"),
+                                fieldWithPath("_links.profile.href").description("profile To Link")
 
                         )
                         ))
@@ -354,7 +360,8 @@ class CommentControllerTest {
                                 parameterWithName("id").description("댓글 식별자")
                         ),
                         links(
-                                linkWithRel("comments-list").description("댓글 목록 이동 링크")
+                                linkWithRel("comments-list").description("댓글 목록 이동 링크"),
+                                linkWithRel(PROFILE).description("profile To Link")
                         )
 
                         ))

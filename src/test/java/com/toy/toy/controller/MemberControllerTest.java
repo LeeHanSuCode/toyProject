@@ -15,8 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpHeaders;
@@ -41,8 +44,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-@AutoConfigureRestDocs(uriScheme = "https",uriHost = "api.member.com" , uriPort = 443)
-@ControllerTestAnnotation
+@AutoConfigureRestDocs
+@AutoConfigureMockMvc
+@SpringBootTest
+@ExtendWith(RestDocumentationExtension.class)
+@Transactional
 @Slf4j
 class MemberControllerTest {
 

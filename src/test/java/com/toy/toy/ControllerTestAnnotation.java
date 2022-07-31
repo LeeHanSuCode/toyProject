@@ -13,10 +13,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
-@AutoConfigureMockMvc
+
 @Retention(RetentionPolicy.RUNTIME)
-@SpringBootTest
-@ExtendWith(RestDocumentationExtension.class)
-@Transactional
+
 public @interface ControllerTestAnnotation {
 }

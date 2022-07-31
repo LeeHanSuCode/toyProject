@@ -38,7 +38,7 @@ public class LoginController {
 
 
 
-    @PostMapping ()
+    @PostMapping
     public ResponseEntity login(@RequestBody @Validated LoginMemberDto loginMemberDto , BindingResult bindingResult,
                                 HttpServletRequest request){
 
@@ -92,7 +92,7 @@ public class LoginController {
 
         return ResponseEntity.ok().body(new RepresentationModel<>()
                 .add(linkTo(HomeController.class).withRel("main-page"))
-                .add(Link.of("/docs/index.html#_로그아웃").withRel(PROFILE))
+                .add(Link.of("/docs/index.html#_로그_아웃").withRel(PROFILE))
         );
     }
 }

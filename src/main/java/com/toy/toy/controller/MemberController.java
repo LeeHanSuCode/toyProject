@@ -59,7 +59,7 @@ public class MemberController {
                .add(locationBuilder.withSelfRel())
                .add(locationBuilder.withRel(MEMBER_UPDATE))
                .add(locationBuilder.withRel(MEMBER_DELETE))
-                       .add(Link.of("/docs/index.html#_회원_가입_성공").withRel(PROFILE))
+                       .add(Link.of("/docs/index.html#_회원_가입").withRel(PROFILE))
 
        );
 
@@ -87,7 +87,7 @@ public class MemberController {
                 .add(linkBuilder.withSelfRel())
                 .add(linkBuilder.withRel(MEMBER_UPDATE))
                 .add(linkBuilder.withRel(MEMBER_DELETE))
-                        .add(Link.of("/docs/index.html#_회원_조회").withRel(PROFILE))
+                        .add(Link.of("/docs/index.html#_회원_단건_조회").withRel(PROFILE))
         );
     }
 

@@ -21,10 +21,13 @@ import static com.toy.toy.StaticVariable.*;
 public class PageAndObjectResponse<T> {
     private T content;
     private List<EntityModel> pageInfo;
+    private RepresentationModel representationModel;
 
-    public  PageAndObjectResponse(T content , PageCalculator pageCalculator) {
+
+    public  PageAndObjectResponse(T content , PageCalculator pageCalculator , RepresentationModel representationModel) {
         this.content = content;
         pageInfo = new ArrayList<>();
+        this.representationModel =representationModel;
         getEntityModelPageResponse(pageCalculator);
     }
 

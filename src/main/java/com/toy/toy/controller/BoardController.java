@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -48,19 +49,6 @@ public class BoardController {
     private final MemberService memberService;
 
 
-/*    @PostConstruct
-    public void init(){
-        Member findMember = memberService.findById(7L);
-        for(int i=0 ; i<100 ; i++){
-           boardService.register(Board.builder()
-                   .subject(i + "제목")
-                   .content(i + "내용")
-                   .readCount(0)
-                   .likeCount(0)
-                   .member(findMember)
-                   .build());
-       }
-    }*/
 
     //게시글 목록
     @GetMapping
@@ -79,8 +67,9 @@ public class BoardController {
 
         //페이지 정보
         PageCalculator pageCalculator = new PageCalculator(10, pageBoard.getTotalPages(), pageBoard.getNumber() + 1);
-
-        PageAndObjectResponse<List> listPageResponse = new PageAndObjectResponse<>(collect ,pageCalculator);
+        RepresentationModel representationModel = new RepresentationModel();
+        representationModel.add(Link.of("/docs/index.html#_게시글_목록_조회").withRel(PROFILE));
+        PageAndObjectResponse<List> listPageResponse = new PageAndObjectResponse<>(collect ,pageCalculator,representationModel);
 
 
         return ResponseEntity.ok()
@@ -100,31 +89,19 @@ public class BoardController {
         BoardResponse boardResponse = new BoardResponse(findBoard, findBoard.getMember());
 
         EntityModel<BoardResponse> entityModel = EntityModel.of(boardResponse)
-                .add(linkTo(BoardController.class).withRel(BOARD_LIST));
+                .add(linkTo(BoardController.class).withRel(BOARD_LIST))
+                .add(Link.of("/docs/index.html#_게시글_단건_조회").withRel(PROFILE));
 
         if(loginResponse!=null && findBoard.getMember().getId().equals(loginResponse.getId())){
             entityModel
                     .add(webMvcLinkBuilder.withRel(BOARD_UPDATE))
-                    .add(webMvcLinkBuilder.withRel(BOARD_DELETE));
+                    .add(webMvcLinkBuilder.withRel(BOARD_DELETE))
+                    ;
         }
 
         return ResponseEntity.ok()
 
                 .body(entityModel);
-    }
-
-    @PostMapping("/test")
-    public ResponseEntity test(/*@RequestPart(value = "filesList" , required = false) List<MultipartFile> filesList*/
-    @RequestPart(value = "writeBoardDto") WriteBoardDto writeBoardDto){
-      /*  log.info("filesList.size={}" , filesList.size());
-        for (MultipartFile multipartFile : filesList) {
-            log.info("name={}" ,multipartFile.getOriginalFilename());
-            log.info("name={}" ,multipartFile.getName());
-        }*/
-
-
-        URI uri = linkTo(BoardController.class).toUri();
-        return ResponseEntity.created(uri).build();
     }
 
 
@@ -153,7 +130,8 @@ public class BoardController {
                 .body(EntityModel.of( new BoardResponse(registerBoard,  findMember))
                         .add(location.withRel(BOARD_UPDATE))
                         .add(location.withRel(BOARD_DELETE))
-                        .add(location.withSelfRel()));
+                        .add(location.withSelfRel())
+                        .add(Link.of("/docs/index.html#_게시글_등록파일_포함").withRel(PROFILE)));
     }
 
 
@@ -177,7 +155,8 @@ public class BoardController {
 
         RepresentationModel representationModel = new RepresentationModel();
         representationModel.add(webMvcLinkBuilder.withRel(BOARD_INFO))
-                .add(linkTo(BoardController.class).withRel(BOARD_LIST));
+                .add(linkTo(BoardController.class).withRel(BOARD_LIST))
+                .add(Link.of("/docs/index.html#_게시글_수정").withRel(PROFILE));
 
         return ResponseEntity.ok()
                 .body(representationModel);
@@ -191,7 +170,8 @@ public class BoardController {
 
         RepresentationModel representationModel = new RepresentationModel();
         representationModel.add(linkTo(BoardController.class).withRel(BOARD_LIST))
-                .add(linkTo(HomeController.class).withRel(MAIN_PAGE));
+                .add(linkTo(HomeController.class).withRel(MAIN_PAGE))
+                .add(Link.of("/docs/index.html#_게시글_삭제").withRel(PROFILE));
         return ResponseEntity.ok()
                 .body(representationModel);
 

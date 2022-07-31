@@ -11,6 +11,7 @@ import com.toy.toy.service.CommentService;
 import com.toy.toy.service.PageCalculator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.EntityMode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -47,8 +48,10 @@ public class CommentController {
 
 
         List<CommentResponse> content = pageComments.getContent();
+        RepresentationModel representationModel = new RepresentationModel();
+        representationModel.add(Link.of("/docs/index.html#_댓글_목록").withRel(PROFILE));
         PageCalculator pageCalculator = new PageCalculator(10 ,pageComments.getTotalPages() , pageComments.getNumber()+1);
-        PageAndObjectResponse<List> listPageResponse = new PageAndObjectResponse<>(content ,pageCalculator);
+        PageAndObjectResponse<List> listPageResponse = new PageAndObjectResponse<>(content ,pageCalculator,representationModel);
 
 
         return ResponseEntity.ok(listPageResponse);
@@ -75,8 +78,9 @@ public class CommentController {
                 EntityModel.of(commentResponse)
                         .add(linkBuilder.withRel("comments-list"))
                         .add(commentLink.withRel("comment-update"))
-                        .add(commentLink.withRel("comment-delete")
-        ));
+                        .add(commentLink.withRel("comment-delete"))
+                        .add(Link.of("/docs/index.html#_댓글_등록").withRel(PROFILE))
+        );
     }
 
 
@@ -93,6 +97,7 @@ public class CommentController {
         return ResponseEntity.ok().body(
                 EntityModel.of(new CommentResponse().changeCommentResponse(updateComment))
                 .add(linkTo(CommentController.class).slash(boardId).withRel("comments-list"))
+                        .add(Link.of("/index.html#_댓글_수정").withRel(PROFILE))
         );
     }
 
@@ -107,6 +112,7 @@ public class CommentController {
         return ResponseEntity.ok().body(
                 representationModel
                         .add(linkTo(CommentController.class).slash(boardId).withRel("comments-list"))
+                        .add(Link.of("/docs/index.html#_댓글_삭제").withRel(PROFILE))
         );
     }
 

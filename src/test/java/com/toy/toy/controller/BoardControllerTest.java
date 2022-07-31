@@ -63,9 +63,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @AutoConfigureRestDocs
-@ControllerTestAnnotation
+@AutoConfigureMockMvc
+@SpringBootTest
+@ExtendWith(RestDocumentationExtension.class)
+@Transactional
 @Slf4j
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class BoardControllerTest {
 
 
@@ -188,11 +190,10 @@ class BoardControllerTest {
                                fieldWithPath("content[].boardContent").description("게시글 내용"),
                                fieldWithPath("content[].filesDtoList[].id").description("게시글의 파일 식별자"),
                                fieldWithPath("content[].filesDtoList[].uploadFilename").description("게시글의 파일 이름"),
-                               fieldWithPath("content[].links[].rel").description("게시글 상세 보기 링크 설명자"),
-                               fieldWithPath("content[].links[].href").description("게시글 상세 보기 링크"),
+                               subsectionWithPath("content[].links[]").description("게시글 상세 보기 링크"),
                                fieldWithPath("pageInfo[].pageNum").description("페이지 번호"),
-                               fieldWithPath("pageInfo[].links[].rel").description("페이지 번호 링크 설명자"),
-                               fieldWithPath("pageInfo[].links[].href").description("페이지 번호 링크")
+                               subsectionWithPath("pageInfo[].links[]").description("페이지 번호 링크"),
+                               subsectionWithPath("representationModel.links[]").description("profile To Link")
                        )
                        ))
        ;
@@ -374,7 +375,7 @@ class BoardControllerTest {
                 .andExpect(jsonPath("$._links.board-delete.href").exists())
                 .andExpect(jsonPath("$._links.self.href").exists())
 
-                .andDo(document("find-board-success" ,
+                .andDo(document("register-board-success" ,
                         requestParts(
                                 partWithName("filesList").description("첨부 이미지"),
                                 partWithName("writeBoardDto").description("제목과 내용").ignored()
@@ -393,7 +394,8 @@ class BoardControllerTest {
                                 fieldWithPath("filesDtoList[].uploadFilename").description("파일 이름"),
                                 fieldWithPath("_links.board-update.href").description("게시글 수정 링크"),
                                 fieldWithPath("_links.board-delete.href").description("게시글 삭제 링크"),
-                                fieldWithPath("_links.self.href").description("self")
+                                fieldWithPath("_links.self.href").description("self"),
+                                fieldWithPath("_links.profile.href").description("profile To Link")
                         )
                         ))
 
@@ -477,7 +479,8 @@ class BoardControllerTest {
                                 fieldWithPath("boardContent").description("게시글 내용"),
                                 fieldWithPath("filesDtoList[].id").description("게시글에 등록된 파일 식별자"),
                                 fieldWithPath("filesDtoList[].uploadFilename").description("게시글에 등록된 파일 이름"),
-                                fieldWithPath("_links.board-list.href").description("게시글 목록 링크")
+                                fieldWithPath("_links.board-list.href").description("게시글 목록 링크"),
+                                fieldWithPath("_links.profile.href").description("profile To Link")
                         )
                         ))
         ;
@@ -561,7 +564,8 @@ class BoardControllerTest {
 
                         links(
                                 linkWithRel(BOARD_LIST).description("게시글 목록 링크"),
-                                linkWithRel(BOARD_INFO).description("게시글 상세 보기")
+                                linkWithRel(BOARD_INFO).description("게시글 상세 보기"),
+                                linkWithRel(PROFILE).description("profile To Link")
                         )
                         ))
                 ;
@@ -628,9 +632,10 @@ class BoardControllerTest {
                         pathParameters(
                                 parameterWithName("id").description("게시글 식별자")
                         ),
-                        responseFields(
-                                fieldWithPath("_links.board-list.href").description("게시글 목록 링크"),
-                                fieldWithPath("_links.main-page.href").description("메인 페이지 링크")
+                        links(
+                                linkWithRel(BOARD_LIST).description("게시글 목록 링크"),
+                                linkWithRel(MAIN_PAGE).description("메인 페이지 링크"),
+                                linkWithRel(PROFILE).description("profile To Link")
                         )
                         ))
 
